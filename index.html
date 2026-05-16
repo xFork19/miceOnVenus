@@ -10,16 +10,12 @@
     <!-- Top Navigation Bar -->
     <nav class="top-navbar">
         <div class="navbar-left">
-<<<<<<< HEAD
             <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
-            <div class="logo">📚 StudyBoard</div>
-=======
             <div class="logo">📚 PeerToPeer</div>
->>>>>>> 077274a5815bf4f04b53609a755bebb49966299d
         </div>
         <div class="navbar-center">
             <div class="search-container">
@@ -32,6 +28,7 @@
             <button class="nav-btn videos-btn" data-view="videos">🎥 Videos</button>
             <button class="notification-btn">🔔</button>
             <button class="profile-btn">👤</button>
+            <button class="settings-btn nav-settings" id="settingsBtnNav" title="Appearance & Settings">⚙️</button>
         </div>
     </nav>
 
@@ -117,12 +114,7 @@
                 </div>
             </div>
 
-            <div class="sidebar-footer">
-                <button class="settings-btn" id="settingsBtn" title="Appearance & Settings">
-                    <span class="settings-icon">⚙️</span>
-                    <span class="settings-label">Settings</span>
-                </button>
-            </div>
+            
         </aside>
 
         <!-- Settings Modal -->
@@ -196,11 +188,11 @@
         <main class="main-content">
             <div class="view-container">
                 <div class="view-header">
-                    <h2 id="viewTitle">All Diagrams</h2>
+                    <h2 id="viewTitle">All Posts</h2>
                 </div>
                 <div class="masonry-grid" id="diagramGrid">
                 <!-- Sample diagram cards -->
-                <div class="diagram-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="diagram-card" data-id="1" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                     <div class="diagram-placeholder">
                         <span>📊</span>
                         <p>Graph Theory Concepts</p>
@@ -210,12 +202,13 @@
                         <p class="card-author">by Alex Johnson</p>
                         <div class="card-meta">
                             <span>Mathematics</span>
-                            <span>❤️ 284</span>
+                            <span class="like-btn">❤️ 284</span>
+                            <button class="save-btn" title="Save">🔖</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="diagram-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="diagram-card" data-id="2" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                     <div class="diagram-placeholder">
                         <span>🧬</span>
                         <p>Cell Structure</p>
@@ -225,12 +218,13 @@
                         <p class="card-author">by Sarah Chen</p>
                         <div class="card-meta">
                             <span>Science</span>
-                            <span>❤️ 156</span>
+                            <span class="like-btn">❤️ 156</span>
+                            <button class="save-btn" title="Save">🔖</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="diagram-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="diagram-card" data-id="3" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                     <div class="diagram-placeholder">
                         <span>🌍</span>
                         <p>World Map</p>
@@ -240,12 +234,13 @@
                         <p class="card-author">by Mike Rodriguez</p>
                         <div class="card-meta">
                             <span>History</span>
-                            <span>❤️ 92</span>
+                            <span class="like-btn">❤️ 92</span>
+                            <button class="save-btn" title="Save">🔖</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="diagram-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <div class="diagram-card" data-id="4" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
                     <div class="diagram-placeholder">
                         <span>📚</span>
                         <p>Literature Analysis</p>
@@ -255,12 +250,13 @@
                         <p class="card-author">by Emily Watson</p>
                         <div class="card-meta">
                             <span>Languages</span>
-                            <span>❤️ 201</span>
+                            <span class="like-btn">❤️ 201</span>
+                            <button class="save-btn" title="Save">🔖</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="diagram-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <div class="diagram-card" data-id="5" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
                     <div class="diagram-placeholder">
                         <span>⚛️</span>
                         <p>Atomic Structure</p>
@@ -270,12 +266,13 @@
                         <p class="card-author">by David Lee</p>
                         <div class="card-meta">
                             <span>Science</span>
-                            <span>❤️ 178</span>
+                            <span class="like-btn">❤️ 178</span>
+                            <button class="save-btn" title="Save">🔖</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="diagram-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                <div class="diagram-card" data-id="6" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
                     <div class="diagram-placeholder">
                         <span>🎭</span>
                         <p>Art History</p>
@@ -285,12 +282,13 @@
                         <p class="card-author">by Julia Martinez</p>
                         <div class="card-meta">
                             <span>Arts & Design</span>
-                            <span>❤️ 145</span>
+                            <span class="like-btn">❤️ 145</span>
+                            <button class="save-btn" title="Save">🔖</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="diagram-card" style="background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);">
+                <div class="diagram-card" data-id="7" style="background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);">
                     <div class="diagram-placeholder">
                         <span>🧮</span>
                         <p>Calculus Concepts</p>
@@ -300,12 +298,13 @@
                         <p class="card-author">by Tom Anderson</p>
                         <div class="card-meta">
                             <span>Mathematics</span>
-                            <span>❤️ 267</span>
+                            <span class="like-btn">❤️ 267</span>
+                            <button class="save-btn" title="Save">🔖</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="diagram-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="diagram-card" data-id="8" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                     <div class="diagram-placeholder">
                         <span>🔭</span>
                         <p>Astronomy</p>
@@ -315,12 +314,13 @@
                         <p class="card-author">by Lisa Park</p>
                         <div class="card-meta">
                             <span>Science</span>
-                            <span>❤️ 189</span>
+                            <span class="like-btn">❤️ 189</span>
+                            <button class="save-btn" title="Save">🔖</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="diagram-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="diagram-card" data-id="9" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                     <div class="diagram-placeholder">
                         <span>🎨</span>
                         <p>Color Theory</p>
@@ -330,13 +330,107 @@
                         <p class="card-author">by Chris Brown</p>
                         <div class="card-meta">
                             <span>Arts & Design</span>
-                            <span>❤️ 134</span>
+                            <span class="like-btn">❤️ 134</span>
+                            <button class="save-btn" title="Save">🔖</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-card" data-id="10" data-type="video" style="background: linear-gradient(135deg, #ffb347 0%, #ffcc33 100%);">
+                    <div class="diagram-placeholder">
+                        <span>🎬</span>
+                        <p>Physics Explainers</p>
+                    </div>
+                    <div class="card-info">
+                        <h3>Newton's Laws in Motion</h3>
+                        <p class="card-author">by Jordan Lee</p>
+                        <div class="card-meta">
+                            <span>Video</span>
+                            <span class="like-btn">❤️ 68</span>
+                            <button class="save-btn" title="Save">🔖</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-card" data-id="11" data-type="video" style="background: linear-gradient(135deg, #7f7fd5 0%, #86a8e7 50%, #91eae4 100%);">
+                    <div class="diagram-placeholder">
+                        <span>📹</span>
+                        <p>Study Tips</p>
+                    </div>
+                    <div class="card-info">
+                        <h3>Memory Techniques</h3>
+                        <p class="card-author">by Maya King</p>
+                        <div class="card-meta">
+                            <span>Video</span>
+                            <span class="like-btn">❤️ 84</span>
+                            <button class="save-btn" title="Save">🔖</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-card" data-id="12" data-type="video" style="background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);">
+                    <div class="diagram-placeholder">
+                        <span>🎥</span>
+                        <p>Exam Prep</p>
+                    </div>
+                    <div class="card-info">
+                        <h3>Study Session Walkthrough</h3>
+                        <p class="card-author">by Alex Pat</p>
+                        <div class="card-meta">
+                            <span>Video</span>
+                            <span class="like-btn">❤️ 99</span>
+                            <button class="save-btn" title="Save">🔖</button>
                         </div>
                     </div>
                 </div>
             </div>
+
+                <!-- Single Post View (hidden by default) -->
+                <div id="singlePostView" class="single-post-view" style="display:none;">
+                    <div class="single-post-inner">
+                        <div class="single-post-columns">
+                        <div class="post-left">
+                            <div id="postImage" class="post-image">📷</div>
+                            <div id="postTitleInline" class="post-title-inline">Title</div>
+                            <div id="postContent" class="post-content">Post content goes here. This is the full details view of the selected post, with the visual on the left and the other information on the right.</div>
+                        </div>
+                        <aside class="post-right">
+                            <div class="post-header">
+                                <div>
+                                    <div id="postAuthor" class="post-author">by Author</div>
+                                    <div id="postCategory" class="post-category">Category</div>
+                                </div>
+                                <div class="post-actions-inline">
+                                    <button id="followInline">Follow</button>
+                                    <button id="likeInline">❤️ 0</button>
+                                    <button id="saveInline">🔖</button>
+                                </div>
+                            </div>
+
+                            <div class="comments-area">
+                                <h4>Comments</h4>
+                                <div id="commentsListInline" class="comments-list"></div>
+                                <form id="commentFormInline" class="comment-form" onsubmit="return false;">
+                                    <div class="comment-input-row">
+                                        <input id="commentInputInline" class="comment-input" placeholder="Add a thoughtful comment...">
+                                        <button id="commentSubmitInline" class="comment-submit">Send</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="related-posts">
+                                <h4>Related Posts</h4>
+                                <div id="relatedGrid" class="related-grid"></div>
+                            </div>
+                        </aside>
+                    </div>
+
+                    <div class="single-post-footer">
+                        <button id="closePostView">Back to feed</button>
+                    </div>
+                </div>
             </div>
-            </div>
+        </div>
         </main>
     </div>
 

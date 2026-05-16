@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Post</title>
+	<link rel="stylesheet" href="tailor.css">
+</head>
+<body>
+	<nav class="top-navbar">
+		<div class="navbar-left">
+			<a href="index.html">← Back</a>
+		</div>
+		<div class="navbar-center"><h3 id="postTitle">Post</h3></div>
+		<div class="navbar-right"></div>
+	</nav>
+
+	<main class="main-content single-post">
+		<section class="post-card" id="postCard">
+			<!-- populated by JS -->
+		</section>
+
+		<section class="comments-section">
+			<h4>Comments</h4>
+			<div id="commentsList"></div>
+			<form id="commentForm">
+				<input id="commentInput" placeholder="Add a comment" required>
+				<button type="submit">Post</button>
+			</form>
+		</section>
+	</main>
+
+	<script>
+	// Small client-side dataset for demo purposes
+	const POSTS = {
+		'1': {id:'1', title:'Graph Theory Basics', author:'Alex Johnson', profile:'alex.jpg', category:'Mathematics', likes:284, content:'A concise overview of graph theory basics.'},
+		'2': {id:'2', title:'Cell Biology Overview', author:'Sarah Chen', profile:'sarah.jpg', category:'Science', likes:156, content:'Fundamentals of cell structure and function.'},
+		'3': {id:'3', title:'European Geography', author:'Mike Rodriguez', profile:'mike.jpg', category:'History', likes:92, content:'Maps and regional facts for Europe.'},
+		'4': {id:'4', title:"Shakespeare's Characters", author:'Emily Watson', profile:'emily.jpg', category:'Languages', likes:201, content:"Notes on major characters and themes."},
+		'5': {id:'5', title:'Chemistry Fundamentals', author:'David Lee', profile:'david.jpg', category:'Science', likes:178, content:'Atomic structure and basic chemistry.'}
+	};
+
+	function qs(name){
+		return new URLSearchParams(location.search).get(name);
+	}
+
+	function getLikedPosts(){ try { return JSON.parse(localStorage.getItem('likedPosts')||'[]'); } catch(e){return [];} }
+	function setLikedPosts(a){ localStorage.setItem('likedPosts', JSON.stringify(a)); }
+	function getSavedPosts(){ try { return JSON.parse(localStorage.getItem('savedPosts')||'[]'); } catch(e){return [];} }
+	function setSavedPosts(a){ localStorage.setItem('savedPosts', JSON.stringify(a)); }
+	function getFollowed(){ try { return JSON.parse(localStorage.getItem('followedAuthors')||'[]'); } catch(e){return [];} }
+	function setFollowed(a){ localStorage.setItem('followedAuthors', JSON.stringify(a)); }
+
+	const id = qs('id');
+	const post = POSTS[id] || {id:'', title:'Not found', author:'', likes:0, content:''};
+	document.getElementById('postTitle').textContent = post.title;
+
+	const postCard = document.getElementById('postCard');
+	postCard.innerHTML = `
+		<div class="post-meta">
+			<div class="poster-info">
+				<div class="poster-avatar">👤</div>
+				<div>
+					<div class="poster-name">${post.author}</div>
+					<div class="poster-category">${post.category}</div>
+				</div>
+			</div>
+			<div class="post-actions">
+				<button id="followBtn">Follow</button>
+				<button id="likeBtn">❤️ ${post.likes}</button>
+				<button id="saveBtn">🔖</button>
+			</div>
+		</div>
+		<article class="post-body"><p>${post.content}</p></article>
+	`;
+
+	// follow
+	const followBtn = document.getElementById('followBtn');
+	const liked = getLikedPosts();
+	const saved = getSavedPosts();
+	const followed = getFollowed();
+
+	if (followed.includes(post.author)) followBtn.textContent = 'Following';
+	followBtn.addEventListener('click', ()=>{
+		const f = getFollowed();
+		if (!f.includes(post.author)) { f.push(post.author); followBtn.textContent='Following'; }
+		else { const i=f.indexOf(post.author); f.splice(i,1); followBtn.textContent='Follow'; }
+		setFollowed(f);
+	});
+
+	// like
+	const likeBtn = document.getElementById('likeBtn');
+	if (liked.includes(id)) likeBtn.classList.add('liked');
+	likeBtn.addEventListener('click', ()=>{
+		const l = getLikedPosts();
+		if (l.includes(id)) return; // only once
+		l.push(id); setLikedPosts(l);
+		const match = likeBtn.textContent.match(/\d+/);
+		const count = match?parseInt(match[0]):0;
+		likeBtn.textContent = `❤️ ${count+1}`;
+		likeBtn.classList.add('liked');
+	});
+
+	// save
+	const saveBtn = document.getElementById('saveBtn');
+	if (saved.includes(id)) saveBtn.classList.add('saved');
+	saveBtn.addEventListener('click', ()=>{
+		const s = getSavedPosts();
+		const idx = s.indexOf(id);
+		if (idx === -1) { s.push(id); saveBtn.classList.add('saved'); }
+		else { s.splice(idx,1); saveBtn.classList.remove('saved'); }
+		setSavedPosts(s);
+	});
+
+	// comments
+	const commentsKey = `comments_${id}`;
+	function renderComments(){
+		const list = document.getElementById('commentsList');
+		list.innerHTML = '';
+		const comments = JSON.parse(localStorage.getItem(commentsKey)||'[]');
+		comments.forEach(c=>{
+			const d = document.createElement('div'); d.className='comment'; d.textContent = c; list.appendChild(d);
+		});
+	}
+	renderComments();
+	document.getElementById('commentForm').addEventListener('submit', (e)=>{
+		e.preventDefault();
+		const v = document.getElementById('commentInput').value.trim();
+		if (!v) return;
+		const comments = JSON.parse(localStorage.getItem(commentsKey)||'[]');
+		comments.push(v);
+		localStorage.setItem(commentsKey, JSON.stringify(comments));
+		document.getElementById('commentInput').value='';
+		renderComments();
+	});
+	</script>
+</body>
+</html>
