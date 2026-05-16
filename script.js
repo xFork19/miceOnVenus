@@ -33,6 +33,12 @@ settingsModal?.addEventListener('click', (e) => {
     }
 });
 
+// Logo click returns to the default feed
+const logoLink = document.querySelector('.logo');
+logoLink?.addEventListener('click', () => {
+    resetMainView();
+});
+
 // Theme switching functionality
 const themeOptions = document.querySelectorAll('input[name="theme"]');
 const htmlElement = document.documentElement;
@@ -100,6 +106,167 @@ const searchBar = document.querySelector('.search-bar');
 let currentCategory = 'all';
 let currentSearch = '';
 let showSavedOnly = false;
+let currentFolder = null;
+
+function getMaterials() {
+    try { return JSON.parse(localStorage.getItem('materialsFolders') || '{}'); } catch(e) { return {}; }
+}
+
+function setMaterials(arr) { localStorage.setItem('materialsFolders', JSON.stringify(arr)); }
+
+function renderMaterialFolders() {
+    const container = document.getElementById('materialFolders');
+    if (!container) return;
+    const materials = getMaterials();
+    container.innerHTML = '';
+
+    Object.keys(materials).forEach(folderName => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'material-folder';
+        if (currentFolder === folderName) button.classList.add('active');
+        button.textContent = `${folderName} (${materials[folderName].length})`;
+        button.addEventListener('click', () => {
+            currentFolder = folderName;
+            viewTitle.textContent = `Materials: ${folderName}`;
+            showSavedOnly = false;
+            currentView = 'posts';
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.posts-btn')?.classList.add('active');
+            renderMaterialFolders();
+            filterDiagrams();
+        });
+        container.appendChild(button);
+    });
+}
+
+function createMaterialFolder(name) {
+    if (!name) return;
+    const materials = getMaterials();
+    if (materials[name]) return;
+    materials[name] = [];
+    setMaterials(materials);
+    renderMaterialFolders();
+}
+
+function removeFromAllFolders(id) {
+    const materials = getMaterials();
+    Object.keys(materials).forEach(folderName => {
+        const index = materials[folderName].indexOf(id);
+        if (index !== -1) {
+            materials[folderName].splice(index, 1);
+        }
+        if (materials[folderName].length === 0) {
+            delete materials[folderName];
+        }
+    });
+    setMaterials(materials);
+    renderMaterialFolders();
+}
+
+function addPostToFolder(folderName, id) {
+    const materials = getMaterials();
+    if (!materials[folderName]) return;
+    if (!materials[folderName].includes(id)) {
+        materials[folderName].push(id);
+        setMaterials(materials);
+        renderMaterialFolders();
+    }
+}
+
+function promptFolderSelection(id) {
+    const materials = getMaterials();
+    const names = Object.keys(materials);
+    let folderName = null;
+
+    if (names.length === 0) {
+        folderName = window.prompt('Enter a new materials folder name:');
+        if (!folderName) return;
+        createMaterialFolder(folderName.trim());
+    } else {
+        const list = names.map((name, index) => `${index + 1}. ${name}`).join('\n');
+        const selection = window.prompt(`Choose a folder by number or type a new name:\n${list}`);
+        if (!selection) return;
+        const selectionIndex = parseInt(selection, 10);
+        if (!isNaN(selectionIndex) && selectionIndex >= 1 && selectionIndex <= names.length) {
+            folderName = names[selectionIndex - 1];
+        } else {
+            folderName = selection.trim();
+            if (!folderName) return;
+            if (!materials[folderName]) createMaterialFolder(folderName);
+        }
+    }
+
+    if (folderName) addPostToFolder(folderName, id);
+}
+
+function resetMainView() {
+    currentFolder = null;
+    showSavedOnly = false;
+    currentView = 'posts';
+    viewTitle.textContent = 'All Posts';
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('.posts-btn')?.classList.add('active');
+    document.querySelector('#singlePostView')?.style.setProperty('display', 'none');
+    document.querySelector('#diagramGrid')?.style.setProperty('display', '');
+    document.querySelector('#sessionsView')?.style.setProperty('display', 'none');
+    renderMaterialFolders();
+    filterDiagrams();
+}
+
+function getJoinedSessions() {
+    try { return JSON.parse(localStorage.getItem('joinedSessions') || '[]'); } catch(e) { return []; }
+}
+
+function setJoinedSessions(arr) { localStorage.setItem('joinedSessions', JSON.stringify(arr)); }
+
+const STUDY_SESSIONS = [
+    { id: 's1', title: 'Exam Review Sprint', description: 'Focus group for upcoming midterms — rapid review and quiz practice.', meta: 'Tue 5:30 PM · 45 min · 8 people joined' },
+    { id: 's2', title: 'Physics Problem Solving', description: 'Collaborative problem session with guided examples and Q&A.', meta: 'Wed 7:00 PM · 60 min · 12 people joined' },
+    { id: 's3', title: 'Language Practice Circle', description: 'Casual study space for vocabulary, grammar, and speaking practice.', meta: 'Thu 4:00 PM · 40 min · 10 people joined' }
+];
+
+function renderJoinedSessions() {
+    const list = document.getElementById('joinedSessionsList');
+    if (!list) return;
+    const joined = getJoinedSessions();
+    list.innerHTML = '';
+    if (joined.length === 0) {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'empty-joined-sessions';
+        placeholder.textContent = 'No joined sessions yet. Join one from the Sessions tab.';
+        list.appendChild(placeholder);
+        return;
+    }
+    joined.forEach(sessionId => {
+        const session = STUDY_SESSIONS.find(s => s.id === sessionId);
+        if (!session) return;
+        const item = document.createElement('div');
+        item.className = 'joined-session-item';
+        item.innerHTML = `<strong>${session.title}</strong><p>${session.meta}</p>`;
+        list.appendChild(item);
+    });
+}
+
+function updateSessionButtons() {
+    document.querySelectorAll('.join-session-btn').forEach(button => {
+        const sessionId = button.dataset.sessionId;
+        const joined = getJoinedSessions();
+        button.textContent = joined.includes(sessionId) ? 'Joined' : 'Join';
+        button.disabled = joined.includes(sessionId);
+        button.classList.toggle('joined', joined.includes(sessionId));
+    });
+}
+
+function handleJoinSession(sessionId) {
+    const joined = getJoinedSessions();
+    if (!joined.includes(sessionId)) {
+        joined.push(sessionId);
+        setJoinedSessions(joined);
+        renderJoinedSessions();
+        updateSessionButtons();
+    }
+}
 
 function getSavedPosts() {
     try { return JSON.parse(localStorage.getItem('savedPosts') || '[]'); } catch(e) { return []; }
@@ -131,6 +298,7 @@ searchBar?.addEventListener('input', (e) => {
 
 function filterDiagrams() {
     const cards = document.querySelectorAll('.diagram-card');
+    const materials = getMaterials();
     
     cards.forEach(card => {
         const type = card.dataset.type || 'post';
@@ -152,6 +320,13 @@ function filterDiagrams() {
         if (showSavedOnly) {
             const saved = getSavedPosts();
             if (!saved.includes(card.dataset.id)) {
+                visible = false;
+            }
+        }
+
+        if (currentFolder) {
+            const folderContents = materials[currentFolder] || [];
+            if (!folderContents.includes(card.dataset.id)) {
                 visible = false;
             }
         }
@@ -225,6 +400,15 @@ function openSinglePost(id) {
     if (saved.includes(id)) saveInline.classList.add('saved'); else saveInline.classList.remove('saved');
     if (followed.includes(post.author)) followInline.textContent = 'Following'; else followInline.textContent = 'Follow';
 
+    const folderButton = document.getElementById('addToFolderInline');
+    if (folderButton) {
+        folderButton.style.display = saved.includes(id) ? '' : 'none';
+        folderButton.onclick = (e) => {
+            e.stopPropagation();
+            promptFolderSelection(id);
+        };
+    }
+
     // Comments
     renderCommentsInline(id);
 
@@ -243,6 +427,7 @@ function openSinglePost(id) {
 
     // Show view
     diagramGrid.style.display = 'none';
+    document.getElementById('sessionsView')?.style.setProperty('display', 'none');
     singlePostView.style.display = '';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -250,27 +435,56 @@ function openSinglePost(id) {
     likeInline.onclick = (e) => {
         e.stopPropagation();
         const l = getLikedPosts();
-        if (l.includes(id)) return; // one-like
-        l.push(id); setLikedPosts(l);
-        // update UI
         const match = likeInline.textContent.match(/\d+/);
-        const count = match ? parseInt(match[0]) : 0;
-        likeInline.textContent = `❤️ ${count+1}`;
-        likeInline.classList.add('liked');
+        let count = match ? parseInt(match[0]) : 0;
+        if (l.includes(id)) {
+            const index = l.indexOf(id);
+            l.splice(index, 1);
+            likeInline.classList.remove('liked');
+            count = Math.max(0, count - 1);
+        } else {
+            l.push(id);
+            likeInline.classList.add('liked');
+            count += 1;
+        }
+        setLikedPosts(l);
+        likeInline.textContent = `❤️ ${count}`;
     };
 
     saveInline.onclick = (e) => {
         e.stopPropagation();
         const s = getSavedPosts();
         const idx = s.indexOf(id);
-        if (idx === -1) { s.push(id); saveInline.classList.add('saved'); } else { s.splice(idx,1); saveInline.classList.remove('saved'); }
+        if (idx === -1) {
+            s.push(id);
+            saveInline.classList.add('saved');
+            if (document.getElementById('addToFolderInline')) {
+                document.getElementById('addToFolderInline').style.display = '';
+            }
+        } else {
+            s.splice(idx,1);
+            saveInline.classList.remove('saved');
+            removeFromAllFolders(id);
+            if (document.getElementById('addToFolderInline')) {
+                document.getElementById('addToFolderInline').style.display = 'none';
+            }
+        }
         setSavedPosts(s);
     };
 
     followInline.onclick = (e) => {
         e.stopPropagation();
         const f = JSON.parse(localStorage.getItem('followedAuthors') || '[]');
-        if (!f.includes(post.author)) { f.push(post.author); followInline.textContent='Following'; } else { const i=f.indexOf(post.author); f.splice(i,1); followInline.textContent='Follow'; }
+        if (!f.includes(post.author)) {
+            f.push(post.author);
+            followInline.textContent = 'Following';
+            followInline.classList.add('following');
+        } else {
+            const i = f.indexOf(post.author);
+            f.splice(i,1);
+            followInline.textContent = 'Follow';
+            followInline.classList.remove('following');
+        }
         localStorage.setItem('followedAuthors', JSON.stringify(f));
     };
 
@@ -341,8 +555,10 @@ document.querySelectorAll('.save-btn').forEach(btn => {
             saved.splice(idx, 1);
             btn.classList.remove('saved');
             btn.textContent = '🔖';
+            removeFromAllFolders(id);
         }
         setSavedPosts(saved);
+        renderMaterialFolders();
     });
 });
 
@@ -360,6 +576,7 @@ document.querySelectorAll('.save-btn').forEach(btn => {
         }
         if (likeBtn && liked.includes(id)) {
             likeBtn.classList.add('liked');
+                likeBtn.textContent = likeBtn.textContent.replace(/\d+/, match => String(Number(match) + 1));
         }
     });
 
@@ -369,8 +586,10 @@ let currentView = 'posts';
 // Posts and Videos button functionality
 const postsBtn = document.querySelector('.posts-btn');
 const videosBtn = document.querySelector('.videos-btn');
+const sessionsBtn = document.querySelector('.sessions-btn');
 const viewTitle = document.getElementById('viewTitle');
 const diagramGrid = document.getElementById('diagramGrid');
+const joinedSessionsList = document.getElementById('joinedSessionsList');
 
 function switchView(view) {
     currentView = view;
@@ -383,9 +602,18 @@ function switchView(view) {
     if (view === 'posts') {
         postsBtn?.classList.add('active');
         viewTitle.textContent = showSavedOnly ? 'Saved Posts' : 'All Posts';
+        diagramGrid.style.display = 'grid';
+        document.getElementById('sessionsView').style.display = 'none';
     } else if (view === 'videos') {
         videosBtn?.classList.add('active');
         viewTitle.textContent = showSavedOnly ? 'Saved Videos' : 'All Videos';
+        diagramGrid.style.display = 'grid';
+        document.getElementById('sessionsView').style.display = 'none';
+    } else if (view === 'sessions') {
+        sessionsBtn?.classList.add('active');
+        viewTitle.textContent = 'Study Sessions';
+        diagramGrid.style.display = 'none';
+        document.getElementById('sessionsView').style.display = 'block';
     }
     
     filterDiagrams();
@@ -399,8 +627,15 @@ videosBtn?.addEventListener('click', () => {
     switchView('videos');
 });
 
+sessionsBtn?.addEventListener('click', () => {
+    switchView('sessions');
+});
+
 // Apply the default view filter on page load
 filterDiagrams();
+renderMaterialFolders();
+renderJoinedSessions();
+updateSessionButtons();
 
 // Upload button functionality
 const uploadOptions = document.querySelectorAll('.option-item');
@@ -451,6 +686,27 @@ if (notificationBtn) {
         alert('No new notifications');
     });
 }
+
+// Create folder button
+const createFolderBtn = document.getElementById('createFolderBtn');
+createFolderBtn?.addEventListener('click', () => {
+    const folderName = window.prompt('Enter a new materials folder name:');
+    if (folderName) createMaterialFolder(folderName.trim());
+});
+
+// Session join buttons
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.join-session-btn');
+    if (!btn) return;
+    const sessionId = btn.dataset.sessionId;
+    if (sessionId) handleJoinSession(sessionId);
+});
+
+// My Study Sessions shortcut
+const mySessionsBtn = document.getElementById('mySessionsBtn');
+mySessionsBtn?.addEventListener('click', () => {
+    switchView('sessions');
+});
 
 // Profile button
 const profileBtn = document.querySelector('.profile-btn');

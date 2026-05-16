@@ -26,6 +26,7 @@
         <div class="navbar-right">
             <button class="nav-btn posts-btn active" data-view="posts">📝 Posts</button>
             <button class="nav-btn videos-btn" data-view="videos">🎥 Videos</button>
+            <button class="nav-btn sessions-btn" data-view="sessions">📚 Sessions</button>
             <button class="notification-btn">🔔</button>
             <button class="profile-btn">👤</button>
             <button class="settings-btn nav-settings" id="settingsBtnNav" title="Appearance & Settings">⚙️</button>
@@ -100,6 +101,23 @@
                     <span>👥</span>
                     <span>Following</span>
                 </div>
+                <div class="option-item study-sessions-panel" id="mySessionsBtn">
+                    <span>📅</span>
+                    <span>My Study Sessions</span>
+                </div>
+            </div>
+
+            <div class="sidebar-section materials-section">
+                <h4>Materials</h4>
+                <div class="material-controls">
+                    <button id="createFolderBtn" class="material-add-btn" type="button">+ New Folder</button>
+                </div>
+                <div id="materialFolders" class="materials-list"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>Joined Sessions</h4>
+                <div id="joinedSessionsList" class="joined-sessions-list"></div>
             </div>
 
             <div class="sidebar-section">
@@ -204,6 +222,39 @@
                             <span>Mathematics</span>
                             <span class="like-btn">❤️ 284</span>
                             <button class="save-btn" title="Save">🔖</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sessionsView" class="sessions-view" style="display:none;">
+                    <div class="sessions-header">
+                        <h3>Available Study Sessions</h3>
+                        <p>Join a session to add it to your study schedule.</p>
+                    </div>
+                    <div class="sessions-grid">
+                        <div class="session-card" data-session-id="s1">
+                            <div>
+                                <h4>Exam Review Sprint</h4>
+                                <p>Focus group for upcoming midterms — rapid review and quiz practice.</p>
+                                <p class="session-meta">Tue 5:30 PM · 45 min · 8 people joined</p>
+                            </div>
+                            <button class="join-session-btn" data-session-id="s1">Join</button>
+                        </div>
+                        <div class="session-card" data-session-id="s2">
+                            <div>
+                                <h4>Physics Problem Solving</h4>
+                                <p>Collaborative problem session with guided examples and Q&A.</p>
+                                <p class="session-meta">Wed 7:00 PM · 60 min · 12 people joined</p>
+                            </div>
+                            <button class="join-session-btn" data-session-id="s2">Join</button>
+                        </div>
+                        <div class="session-card" data-session-id="s3">
+                            <div>
+                                <h4>Language Practice Circle</h4>
+                                <p>Casual study space for vocabulary, grammar, and speaking practice.</p>
+                                <p class="session-meta">Thu 4:00 PM · 40 min · 10 people joined</p>
+                            </div>
+                            <button class="join-session-btn" data-session-id="s3">Join</button>
                         </div>
                     </div>
                 </div>
@@ -330,7 +381,8 @@
                         <p class="card-author">by Chris Brown</p>
                         <div class="card-meta">
                             <span>Art & Design</span>
-                            <span>❤️ 134</span>
+                            <span class="like-btn">❤️ 134</span>
+                            <button class="save-btn" title="Save">🔖</button>
                         </div>
                     </div>
                 </div>
@@ -355,6 +407,7 @@
                                     <button id="followInline">Follow</button>
                                     <button id="likeInline">❤️ 0</button>
                                     <button id="saveInline">🔖</button>
+                                    <button id="addToFolderInline" class="folder-inline" style="display:none;">Add to folder</button>
                                 </div>
                             </div>
 
