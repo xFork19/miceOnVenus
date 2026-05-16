@@ -96,7 +96,6 @@ document.querySelectorAll('.settings-toggle input[type="checkbox"]').forEach((to
 // Category filter functionality
 const categoryItems = document.querySelectorAll('.category-item');
 const searchBar = document.querySelector('.search-bar');
-const diagramGrid = document.getElementById('diagramGrid');
 
 let currentCategory = 'all';
 let currentSearch = '';
@@ -156,6 +155,46 @@ likeButtons.forEach(btn => {
     });
 });
 
+// Current view state
+let currentView = 'posts';
+
+// Posts and Videos button functionality
+const postsBtn = document.querySelector('.posts-btn');
+const videosBtn = document.querySelector('.videos-btn');
+const viewTitle = document.getElementById('viewTitle');
+const diagramGrid = document.getElementById('diagramGrid');
+
+function switchView(view) {
+    currentView = view;
+    
+    // Update active button
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    if (view === 'posts') {
+        postsBtn?.classList.add('active');
+        viewTitle.textContent = 'All Posts';
+    } else if (view === 'videos') {
+        videosBtn?.classList.add('active');
+        viewTitle.textContent = 'All Videos';
+    }
+    
+    // Show/hide diagrams based on type
+    const cards = document.querySelectorAll('.diagram-card');
+    cards.forEach(card => {
+        card.style.display = '';
+    });
+}
+
+postsBtn?.addEventListener('click', () => {
+    switchView('posts');
+});
+
+videosBtn?.addEventListener('click', () => {
+    switchView('videos');
+});
+
 // Upload button functionality
 const uploadOptions = document.querySelectorAll('.option-item');
 if (uploadOptions.length > 0) {
@@ -175,6 +214,20 @@ if (uploadOptions.length > 1) {
 if (uploadOptions.length > 2) {
     uploadOptions[2].addEventListener('click', () => {
         alert('View diagrams from users you follow!');
+    });
+}
+
+// Direct Messages button functionality
+if (uploadOptions.length > 3) {
+    uploadOptions[3].addEventListener('click', () => {
+        alert('Direct Messages coming soon!');
+    });
+}
+
+// Study Sessions button functionality
+if (uploadOptions.length > 4) {
+    uploadOptions[4].addEventListener('click', () => {
+        alert('Study Sessions coming soon!');
     });
 }
 

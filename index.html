@@ -10,6 +10,11 @@
     <!-- Top Navigation Bar -->
     <nav class="top-navbar">
         <div class="navbar-left">
+            <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
             <div class="logo">📚 StudyBoard</div>
         </div>
         <div class="navbar-center">
@@ -19,6 +24,8 @@
             </div>
         </div>
         <div class="navbar-right">
+            <button class="nav-btn posts-btn active" data-view="posts">📝 Posts</button>
+            <button class="nav-btn videos-btn" data-view="videos">🎥 Videos</button>
             <button class="notification-btn">🔔</button>
             <button class="profile-btn">👤</button>
         </div>
@@ -26,13 +33,6 @@
 
     <!-- Main Container -->
     <div class="main-container">
-        <!-- Sidebar Toggle Button -->
-        <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-
         <!-- Left Sidebar -->
         <aside class="left-sidebar" id="leftSidebar">
             <div class="sidebar-header">
@@ -99,9 +99,17 @@
                     <span>👥</span>
                     <span>Following</span>
                 </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>Connect</h4>
                 <div class="option-item">
-                    <span>⚙️</span>
-                    <span>Settings</span>
+                    <span>💬</span>
+                    <span>Direct Messages</span>
+                </div>
+                <div class="option-item">
+                    <span>📚</span>
+                    <span>Study Sessions</span>
                 </div>
             </div>
 
@@ -182,7 +190,11 @@
 
         <!-- Main Content Area -->
         <main class="main-content">
-            <div class="masonry-grid" id="diagramGrid">
+            <div class="view-container">
+                <div class="view-header">
+                    <h2 id="viewTitle">All Diagrams</h2>
+                </div>
+                <div class="masonry-grid" id="diagramGrid">
                 <!-- Sample diagram cards -->
                 <div class="diagram-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                     <div class="diagram-placeholder">
@@ -318,6 +330,8 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            </div>
             </div>
         </main>
     </div>
