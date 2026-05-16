@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyBoard - Student Study Diagrams</title>
+    <link rel="stylesheet" href="tailor.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-navbar">
+        <div class="navbar-left">
+            <div class="logo">📚 StudyBoard</div>
+        </div>
+        <div class="navbar-center">
+            <div class="search-container">
+                <input type="text" class="search-bar" placeholder="Search diagrams, topics...">
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <button class="notification-btn">🔔</button>
+            <button class="profile-btn">👤</button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar Toggle Button -->
+        <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- Left Sidebar -->
+        <aside class="left-sidebar" id="leftSidebar">
+            <div class="sidebar-header">
+                <h3>Settings</h3>
+            </div>
+            
+            <div class="sidebar-section">
+                <h4>Categories</h4>
+                <div class="category-list">
+                    <div class="category-item active" data-category="all">
+                        <span class="category-icon">⭐</span>
+                        <span>All Diagrams</span>
+                    </div>
+                    <div class="category-item" data-category="math">
+                        <span class="category-icon">📐</span>
+                        <span>Mathematics</span>
+                    </div>
+                    <div class="category-item" data-category="science">
+                        <span class="category-icon">🔬</span>
+                        <span>Science</span>
+                    </div>
+                    <div class="category-item" data-category="history">
+                        <span class="category-icon">📜</span>
+                        <span>History</span>
+                    </div>
+                    <div class="category-item" data-category="language">
+                        <span class="category-icon">📖</span>
+                        <span>Languages</span>
+                    </div>
+                    <div class="category-item" data-category="art">
+                        <span class="category-icon">🎨</span>
+                        <span>Arts & Design</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>Filters</h4>
+                <label class="filter-checkbox">
+                    <input type="checkbox" checked>
+                    <span>Recent</span>
+                </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox">
+                    <span>Most Popular</span>
+                </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox">
+                    <span>Trending</span>
+                </label>
+            </div>
+
+            <div class="sidebar-section">
+                <h4>My Options</h4>
+                <div class="option-item">
+                    <span>⬆️</span>
+                    <span>Upload Diagram</span>
+                </div>
+                <div class="option-item">
+                    <span>❤️</span>
+                    <span>Saved</span>
+                </div>
+                <div class="option-item">
+                    <span>👥</span>
+                    <span>Following</span>
+                </div>
+                <div class="option-item">
+                    <span>⚙️</span>
+                    <span>Settings</span>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="settings-btn" id="settingsBtn" title="Appearance & Settings">
+                    <span class="settings-icon">⚙️</span>
+                    <span class="settings-label">Settings</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Settings Modal -->
+        <div class="settings-modal" id="settingsModal">
+            <div class="settings-modal-content">
+                <div class="modal-header">
+                    <h2>Appearance & Settings</h2>
+                    <button class="modal-close" id="modalClose">✕</button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-section">
+                        <h4>Theme</h4>
+                        <div class="theme-options">
+                            <label class="theme-option">
+                                <input type="radio" name="theme" value="light" checked>
+                                <span class="theme-preview light-theme"></span>
+                                <span>Light</span>
+                            </label>
+                            <label class="theme-option">
+                                <input type="radio" name="theme" value="dark">
+                                <span class="theme-preview dark-theme"></span>
+                                <span>Dark</span>
+                            </label>
+                            <label class="theme-option">
+                                <input type="radio" name="theme" value="auto">
+                                <span class="theme-preview auto-theme"></span>
+                                <span>Auto</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h4>Display</h4>
+                        <label class="settings-toggle">
+                            <input type="checkbox" checked>
+                            <span>Compact Mode</span>
+                        </label>
+                        <label class="settings-toggle">
+                            <input type="checkbox" checked>
+                            <span>Show Animations</span>
+                        </label>
+                        <label class="settings-toggle">
+                            <input type="checkbox">
+                            <span>Reduce Motion</span>
+                        </label>
+                    </div>
+
+                    <div class="settings-section">
+                        <h4>Notifications</h4>
+                        <label class="settings-toggle">
+                            <input type="checkbox" checked>
+                            <span>Enable Notifications</span>
+                        </label>
+                        <label class="settings-toggle">
+                            <input type="checkbox" checked>
+                            <span>Sound Effects</span>
+                        </label>
+                    </div>
+
+                    <div class="settings-section">
+                        <h4>Account</h4>
+                        <button class="settings-action-btn">Edit Profile</button>
+                        <button class="settings-action-btn">Change Password</button>
+                        <button class="settings-action-btn logout">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="masonry-grid" id="diagramGrid">
+                <!-- Sample diagram cards -->
+                <div class="diagram-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="diagram-placeholder">
+                        <span>📊</span>
+                        <p>Graph Theory Concepts</p>
+                    </div>
+                    <div class="card-info">
+                        <h3>Graph Theory Basics</h3>
+                        <p class="card-author">by Alex Johnson</p>
+                        <div class="card-meta">
+                            <span>Mathematics</span>
+                            <span>❤️ 284</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <div class="diagram-placeholder">
+                        <span>🧬</span>
+                        <p>Cell Structure</p>
+                    </div>
+                    <div class="card-info">
+                        <h3>Cell Biology Overview</h3>
+                        <p class="card-author">by Sarah Chen</p>
+                        <div class="card-meta">
+                            <span>Science</span>
+                            <span>❤️ 156</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <div class="diagram-placeholder">
+                        <span>🌍</span>
+                        <p>World Map</p>
+                    </div>
+                    <div class="card-info">
+                        <h3>European Geography</h3>
+                        <p class="card-author">by Mike Rodriguez</p>
+                        <div class="card-meta">
+                            <span>History</span>
+                            <span>❤️ 92</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    <div class="diagram-placeholder">
+                        <span>📚</span>
+                        <p>Literature Analysis</p>
+                    </div>
+                    <div class="card-info">
+                        <h3>Shakespeare's Characters</h3>
+                        <p class="card-author">by Emily Watson</p>
+                        <div class="card-meta">
+                            <span>Languages</span>
+                            <span>❤️ 201</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                    <div class="diagram-placeholder">
+                        <span>⚛️</span>
+                        <p>Atomic Structure</p>
+                    </div>
+                    <div class="card-info">
+                        <h3>Chemistry Fundamentals</h3>
+                        <p class="card-author">by David Lee</p>
+                        <div class="card-meta">
+                            <span>Science</span>
+                            <span>❤️ 178</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                    <div class="diagram-placeholder">
+                        <span>🎭</span>
+                        <p>Art History</p>
+                    </div>
+                    <div class="card-info">
+                        <h3>Renaissance Art Timeline</h3>
+                        <p class="card-author">by Julia Martinez</p>
+                        <div class="card-meta">
+                            <span>Arts & Design</span>
+                            <span>❤️ 145</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-card" style="background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);">
+                    <div class="diagram-placeholder">
+                        <span>🧮</span>
+                        <p>Calculus Concepts</p>
+                    </div>
+                    <div class="card-info">
+                        <h3>Derivatives & Integrals</h3>
+                        <p class="card-author">by Tom Anderson</p>
+                        <div class="card-meta">
+                            <span>Mathematics</span>
+                            <span>❤️ 267</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="diagram-placeholder">
+                        <span>🔭</span>
+                        <p>Astronomy</p>
+                    </div>
+                    <div class="card-info">
+                        <h3>Solar System Guide</h3>
+                        <p class="card-author">by Lisa Park</p>
+                        <div class="card-meta">
+                            <span>Science</span>
+                            <span>❤️ 189</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <div class="diagram-placeholder">
+                        <span>🎨</span>
+                        <p>Color Theory</p>
+                    </div>
+                    <div class="card-info">
+                        <h3>Design Principles</h3>
+                        <p class="card-author">by Chris Brown</p>
+                        <div class="card-meta">
+                            <span>Arts & Design</span>
+                            <span>❤️ 134</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
