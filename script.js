@@ -210,6 +210,8 @@ function resetMainView() {
     document.querySelector('#singlePostView')?.style.setProperty('display', 'none');
     document.querySelector('#diagramGrid')?.style.setProperty('display', '');
     document.querySelector('#sessionsView')?.style.setProperty('display', 'none');
+    document.querySelector('#discussionsView')?.style.setProperty('display', 'none');
+    document.querySelector('#shopView')?.style.setProperty('display', 'none');
     renderMaterialFolders();
     filterDiagrams();
 }
@@ -589,7 +591,12 @@ const videosBtn = document.querySelector('.videos-btn');
 const sessionsBtn = document.querySelector('.sessions-btn');
 const viewTitle = document.getElementById('viewTitle');
 const diagramGrid = document.getElementById('diagramGrid');
+const discussionsView = document.getElementById('discussionsView');
+const shopView = document.getElementById('shopView');
+const userPointsLabel = document.getElementById('userPointsLabel');
 const joinedSessionsList = document.getElementById('joinedSessionsList');
+const discussionsBtn = document.querySelector('.discussions-btn');
+const shopBtn = document.querySelector('.shop-btn');
 
 function switchView(view) {
     currentView = view;
@@ -599,21 +606,44 @@ function switchView(view) {
         btn.classList.remove('active');
     });
     
+    const sessionsViewElement = document.getElementById('sessionsView');
+    const discussionViewElement = discussionsView;
+    const shopViewElement = shopView;
     if (view === 'posts') {
         postsBtn?.classList.add('active');
         viewTitle.textContent = showSavedOnly ? 'Saved Posts' : 'All Posts';
         diagramGrid.style.display = 'grid';
-        document.getElementById('sessionsView').style.display = 'none';
+        sessionsViewElement.style.display = 'none';
+        discussionViewElement.style.display = 'none';
+        shopViewElement.style.display = 'none';
     } else if (view === 'videos') {
         videosBtn?.classList.add('active');
         viewTitle.textContent = showSavedOnly ? 'Saved Videos' : 'All Videos';
         diagramGrid.style.display = 'grid';
-        document.getElementById('sessionsView').style.display = 'none';
+        sessionsViewElement.style.display = 'none';
+        discussionViewElement.style.display = 'none';
+        shopViewElement.style.display = 'none';
     } else if (view === 'sessions') {
         sessionsBtn?.classList.add('active');
         viewTitle.textContent = 'Study Sessions';
         diagramGrid.style.display = 'none';
-        document.getElementById('sessionsView').style.display = 'block';
+        sessionsViewElement.style.display = 'block';
+        discussionViewElement.style.display = 'none';
+        shopViewElement.style.display = 'none';
+    } else if (view === 'discussions') {
+        discussionsBtn?.classList.add('active');
+        viewTitle.textContent = 'Discussion Boards';
+        diagramGrid.style.display = 'none';
+        sessionsViewElement.style.display = 'none';
+        discussionViewElement.style.display = 'block';
+        shopViewElement.style.display = 'none';
+    } else if (view === 'shop') {
+        shopBtn?.classList.add('active');
+        viewTitle.textContent = 'Shop Prizes';
+        diagramGrid.style.display = 'none';
+        sessionsViewElement.style.display = 'none';
+        discussionViewElement.style.display = 'none';
+        shopViewElement.style.display = 'block';
     }
     
     filterDiagrams();
@@ -625,6 +655,14 @@ postsBtn?.addEventListener('click', () => {
 
 videosBtn?.addEventListener('click', () => {
     switchView('videos');
+});
+
+discussionsBtn?.addEventListener('click', () => {
+    switchView('discussions');
+});
+
+shopBtn?.addEventListener('click', () => {
+    switchView('shop');
 });
 
 sessionsBtn?.addEventListener('click', () => {
@@ -645,39 +683,42 @@ if (uploadOptions.length > 0) {
     });
 }
 
-// Saved button functionality — toggle showing only saved posts
-if (uploadOptions.length > 1) {
-    uploadOptions[1].addEventListener('click', () => {
-        showSavedOnly = !showSavedOnly;
-        if (showSavedOnly) {
-            viewTitle.textContent = currentView === 'videos' ? 'Saved Videos' : 'Saved Posts';
-        } else {
-            viewTitle.textContent = currentView === 'videos' ? 'All Videos' : 'All Posts';
-        }
-        filterDiagrams();
-    });
-}
+const uploadDiagramBtn = document.querySelector('.option-item[data-action="upload"]');
+const savedBtn = document.querySelector('.option-item[data-action="saved"]');
+const followingBtn = document.querySelector('.option-item[data-action="following"]');
+const joinedDiscussionsBtn = document.querySelector('.option-item[data-action="joined-discussions"]');
+const directMessagesBtn = document.querySelector('.option-item[data-action="direct-messages"]');
+const connectSessionsBtn = document.querySelector('.option-item[data-action="connect-sessions"]');
 
-// Following button functionality
-if (uploadOptions.length > 2) {
-    uploadOptions[2].addEventListener('click', () => {
-        alert('View diagrams from users you follow!');
-    });
-}
+uploadDiagramBtn?.addEventListener('click', () => {
+    alert('Upload Diagram feature coming soon!');
+});
 
-// Direct Messages button functionality
-if (uploadOptions.length > 3) {
-    uploadOptions[3].addEventListener('click', () => {
-        alert('Direct Messages coming soon!');
-    });
-}
+savedBtn?.addEventListener('click', () => {
+    showSavedOnly = !showSavedOnly;
+    if (showSavedOnly) {
+        viewTitle.textContent = currentView === 'videos' ? 'Saved Videos' : 'Saved Posts';
+    } else {
+        viewTitle.textContent = currentView === 'videos' ? 'All Videos' : 'All Posts';
+    }
+    filterDiagrams();
+});
 
-// Study Sessions button functionality
-if (uploadOptions.length > 4) {
-    uploadOptions[4].addEventListener('click', () => {
-        alert('Study Sessions coming soon!');
-    });
-}
+followingBtn?.addEventListener('click', () => {
+    alert('View diagrams from users you follow!');
+});
+
+joinedDiscussionsBtn?.addEventListener('click', () => {
+    switchView('discussions');
+});
+
+directMessagesBtn?.addEventListener('click', () => {
+    alert('Direct Messages coming soon!');
+});
+
+connectSessionsBtn?.addEventListener('click', () => {
+    alert('Study Sessions coming soon!');
+});
 
 // Notification button
 const notificationBtn = document.querySelector('.notification-btn');
@@ -686,6 +727,18 @@ if (notificationBtn) {
         alert('No new notifications');
     });
 }
+
+function getUserPoints() {
+    return Number(localStorage.getItem('userPoints') || '120');
+}
+
+function updatePointsLabel() {
+    if (!userPointsLabel) return;
+    const points = getUserPoints();
+    userPointsLabel.textContent = `My Points: ${points}`;
+}
+
+updatePointsLabel();
 
 // Create folder button
 const createFolderBtn = document.getElementById('createFolderBtn');

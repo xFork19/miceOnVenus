@@ -15,7 +15,7 @@
                 <span></span>
                 <span></span>
             </button>
-            <div class="logo">📚 PeerToPeer</div>
+            <div class="logo">📚 PeerToPeer <span id="userPointsLabel">My Points: 120</span></div>
         </div>
         <div class="navbar-center">
             <div class="search-container">
@@ -26,6 +26,8 @@
         <div class="navbar-right">
             <button class="nav-btn posts-btn active" data-view="posts">📝 Posts</button>
             <button class="nav-btn videos-btn" data-view="videos">🎥 Videos</button>
+            <button class="nav-btn discussions-btn" data-view="discussions">💬 Discussion Boards</button>
+            <button class="nav-btn shop-btn" data-view="shop">🛍️ Shop</button>
             <button class="nav-btn sessions-btn" data-view="sessions">📚 Sessions</button>
             <button class="notification-btn">🔔</button>
             <button class="profile-btn">👤</button>
@@ -100,6 +102,10 @@
                 <div class="option-item">
                     <span>👥</span>
                     <span>Following</span>
+                </div>
+                <div class="option-item" data-action="joined-discussions">
+                    <span>💬</span>
+                    <span>Discussion Boards I've Joined</span>
                 </div>
                 <div class="option-item study-sessions-panel" id="mySessionsBtn">
                     <span>📅</span>
@@ -255,6 +261,59 @@
                                 <p class="session-meta">Thu 4:00 PM · 40 min · 10 people joined</p>
                             </div>
                             <button class="join-session-btn" data-session-id="s3">Join</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="discussionsView" class="discussions-view" style="display:none;">
+                    <div class="discussions-header">
+                        <h3>Discussion Boards</h3>
+                        <p>Browse boards or view the discussion groups you have joined.</p>
+                    </div>
+                    <div class="discussion-list">
+                        <div class="discussion-card" data-board-id="d1">
+                            <h4>Study Tips</h4>
+                            <p>Share and discover study methods, time management, and productivity hacks.</p>
+                            <span class="discussion-meta">Joined: 234 students</span>
+                        </div>
+                        <div class="discussion-card" data-board-id="d2">
+                            <h4>Class Notes</h4>
+                            <p>Post summaries, notes, and helpful explanations for class topics.</p>
+                            <span class="discussion-meta">Joined: 178 students</span>
+                        </div>
+                        <div class="discussion-card" data-board-id="d3">
+                            <h4>Exam Q&A</h4>
+                            <p>Ask questions, answer others, and prepare together for upcoming tests.</p>
+                            <span class="discussion-meta">Joined: 312 students</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="shopView" class="shop-view" style="display:none;">
+                    <div class="shop-header">
+                        <h3>Shop Prizes</h3>
+                        <p>Earn points and redeem prizes. Higher-value items cost more.</p>
+                    </div>
+                    <div class="prize-grid">
+                        <div class="prize-card">
+                            <h4>Eraser</h4>
+                            <p>Perfect for quick corrections.</p>
+                            <span class="prize-cost">Cost: 50 points</span>
+                        </div>
+                        <div class="prize-card">
+                            <h4>Pencil Set</h4>
+                            <p>Stylish pencils for note-taking.</p>
+                            <span class="prize-cost">Cost: 120 points</span>
+                        </div>
+                        <div class="prize-card">
+                            <h4>Notebook</h4>
+                            <p>Durable notebook for daily study sessions.</p>
+                            <span class="prize-cost">Cost: 200 points</span>
+                        </div>
+                        <div class="prize-card">
+                            <h4>Wireless Mouse</h4>
+                            <p>High-quality mouse for comfortable work.</p>
+                            <span class="prize-cost">Cost: 450 points</span>
                         </div>
                     </div>
                 </div>
