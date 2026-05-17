@@ -956,25 +956,25 @@ body.dark-mode .points-box {
     margin: 0;
 }
 
-/* Masonry Grid */
+/* Feed Grid */
 .masonry-grid {
-    column-width: 260px;
-    column-gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 4px;
 }
 
 .diagram-card {
     background: #fff;
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    display: inline-flex;
+    display: flex;
     flex-direction: column;
     width: 100%;
-    margin-bottom: 16px;
-    break-inside: avoid;
-    -webkit-column-break-inside: avoid;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .diagram-card:hover {
