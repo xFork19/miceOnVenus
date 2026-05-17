@@ -45,6 +45,16 @@ body {
     opacity: 0.8;
 }
 
+.points-box {
+    border: 2px solid #000;
+    border-radius: 14px;
+    padding: 8px 14px;
+    font-weight: 600;
+    background-color: #fff;
+    color: #000;
+    white-space: nowrap;
+}
+
 .navbar-center {
     flex: 1;
     max-width: 400px;
