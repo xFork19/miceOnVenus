@@ -204,7 +204,7 @@ body.dark-mode .points-box {
     width: 260px;
     background-color: #fff;
     border-right: 1px solid #e0e0e0;
-    padding: 20px 0;
+    padding: 20px 18px; /* more horizontal padding so content isn't flush to edges */
     overflow-y: auto;
     flex-shrink: 0;
     display: flex;
@@ -239,8 +239,17 @@ body.dark-mode .points-box {
 }
 
 .sidebar-header {
-    padding: 0 16px 16px 16px;
+    padding: 0 12px 16px 12px;
     border-bottom: 1px solid #e0e0e0;
+}
+
+/* Ensure each section uses full width but centers its inner content */
+.sidebar-section {
+    padding: 16px 0;
+    border-bottom: 1px solid #f0f0f0;
+    flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .sidebar-header h3 {
@@ -273,7 +282,17 @@ body.dark-mode .points-box {
 }
 
 .sidebar-section-content {
-    padding: 0 16px;
+    padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* keep text left-aligned by default */
+    text-align: left;
+}
+
+/* Center only buttons inside section content while leaving text left-aligned */
+.sidebar-section-content button {
+    align-self: center;
+    min-width: 120px;
 }
 
 .sidebar-section.collapsed .sidebar-section-content {
@@ -846,17 +865,21 @@ body.dark-mode .points-box {
 .category-list {
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 .category-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 8px 16px;
+    justify-content: flex-start; /* left-align icon + label */
+    gap: 10px;
+    padding: 8px 12px;
     cursor: pointer;
     transition: background-color 0.2s ease;
     font-size: 14px;
     color: #555;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .category-item:hover {
@@ -878,12 +901,15 @@ body.dark-mode .points-box {
 .filter-checkbox {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 8px;
-    padding: 8px 16px;
+    padding: 8px 12px;
     cursor: pointer;
     font-size: 14px;
     color: #555;
     transition: background-color 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .filter-checkbox:hover {
@@ -897,12 +923,15 @@ body.dark-mode .points-box {
 .option-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 8px 16px;
+    justify-content: flex-start; /* left-align icon + label */
+    gap: 10px;
+    padding: 8px 12px;
     cursor: pointer;
     transition: background-color 0.2s ease;
     font-size: 14px;
     color: #555;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .option-item:hover {
