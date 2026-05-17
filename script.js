@@ -353,9 +353,10 @@ function renderDiscussionThreadList(boardId) {
         card.innerHTML = `
             <div class="thread-meta-row">
                 <strong>${thread.title}</strong>
-                <span>${thread.views} views</span>
+                <span>${thread.views} views • ${thread.points || 2} pts</span>
             </div>
             <p>Started by <button class="thread-author-link">${thread.author}</button></p>
+            <div class="thread-tags">${(thread.tags || []).map(tag => `<span class="tag-badge">${tag}</span>`).join('')}</div>
         `;
         card.addEventListener('click', (e) => {
             if (e.target.closest('.thread-author-link')) return;
@@ -384,6 +385,14 @@ function openDiscussionThread(threadId) {
     document.getElementById('threadViews').textContent = `${thread.views + 1} views`;
     const messagesBox = document.getElementById('threadMessages');
     messagesBox.innerHTML = '';
+    if (thread.fileData) {
+        const attachment = document.createElement('div');
+        attachment.className = 'discussion-attachment';
+        attachment.innerHTML = thread.mediaType === 'video'
+            ? `<video controls src="${thread.fileData}" preload="metadata"></video>`
+            : `<img src="${thread.fileData}" alt="Thread attachment">`;
+        messagesBox.appendChild(attachment);
+    }
     const baseReplies = thread.replies || [];
     const savedReplies = getSavedReplies(threadId);
     const allReplies = [...baseReplies, ...savedReplies];
@@ -414,27 +423,54 @@ function createNewThread() {
     const title = document.getElementById('newThreadTitle')?.value.trim();
     const author = document.getElementById('newThreadAuthor')?.value.trim() || 'Anonymous';
     const message = document.getElementById('newThreadMessage')?.value.trim();
+    const accuracy = document.querySelector('input[name="threadAccuracy"]:checked')?.value || 'accurate';
+    const fileInput = document.getElementById('threadMediaInput');
     if (!title || !message) {
         alert('Please add both a thread title and a message.');
         return;
     }
-    const savedThreads = getSavedDiscussionThreads();
+
     const newThread = {
         id: `new_${Date.now()}`,
         boardId: currentDiscussionBoard,
         title,
         author,
         views: 0,
-        replies: [{ author, content: message }]
+        replies: [{ author, content: message }],
+        tags: [accuracy === 'accurate' ? 'AI Accurate' : 'AI Not Accurate'],
+        points: 2
     };
-    savedThreads.push(newThread);
-    setSavedDiscussionThreads(savedThreads);
-    document.getElementById('newThreadTitle').value = '';
-    document.getElementById('newThreadAuthor').value = '';
-    document.getElementById('newThreadMessage').value = '';
-    document.getElementById('newThreadForm').style.display = 'none';
-    renderDiscussionThreadList(currentDiscussionBoard);
-    openDiscussionThread(newThread.id);
+
+    const saveThread = (fileData, mediaType) => {
+        if (fileData) {
+            newThread.fileData = fileData;
+            newThread.mediaType = mediaType;
+        }
+        const savedThreads = getSavedDiscussionThreads();
+        savedThreads.push(newThread);
+        setSavedDiscussionThreads(savedThreads);
+        document.getElementById('newThreadTitle').value = '';
+        document.getElementById('newThreadAuthor').value = '';
+        document.getElementById('newThreadMessage').value = '';
+        if (fileInput) fileInput.value = '';
+        document.getElementById('newThreadForm').style.display = 'none';
+        renderDiscussionThreadList(currentDiscussionBoard);
+        openDiscussionThread(newThread.id);
+        setUserPoints(getUserPoints() + 2);
+        updatePointsLabel();
+        alert('Thread posted! You earned 2 points.');
+    };
+
+    if (fileInput && fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+            saveThread(reader.result, file.type.startsWith('video/') ? 'video' : 'image');
+        };
+        reader.readAsDataURL(file);
+    } else {
+        saveThread(null, null);
+    }
 }
 
 function replyToThread(e) {
@@ -448,6 +484,9 @@ function replyToThread(e) {
     setSavedReplies(currentDiscussionThread, replies);
     document.getElementById('replyMessage').value = '';
     document.getElementById('replyAuthor').value = '';
+    setUserPoints(getUserPoints() + 2);
+    updatePointsLabel();
+    alert('Reply posted! You earned 2 points.');
     openDiscussionThread(currentDiscussionThread);
 }
 
@@ -507,6 +546,18 @@ const IMAGE_CATEGORIES = {
     p: {category:'Science', tags:['technology','innovation','STEM']}
 };
 
+const CATEGORY_TITLES = {
+    'Arts & Design': ['Creative Layout Guide', 'Design Flow Map', 'Visual Study Plan', 'Art Strategy Diagram'],
+    'Science': ['Science Concept Map', 'Study Lab Workflow', 'Experiment Revision Guide', 'STEM Review Diagram'],
+    'Mathematics': ['Math Strategy Map', 'Problem Solving Guide', 'Calculus Review Diagram', 'Algebra Flowchart']
+};
+
+function getReadablePostTitle(filename, category, index) {
+    const titles = CATEGORY_TITLES[category] || [`${category} Diagram`];
+    return titles[index % titles.length];
+}
+
+
 const AUTHOR_NAMES = [
     'Ava Chen', 'Liam Patel', 'Mia Thompson', 'Noah Rivera', 'Zoe Brooks',
     'Ethan Nguyen', 'Luna Carter', 'Jayden Kim', 'Iris Murphy', 'Riley Scott',
@@ -521,17 +572,18 @@ IMAGE_FILE_LIST.forEach((filename, index) => {
     const prefix = filename[0];
     const meta = IMAGE_CATEGORIES[prefix] || {category:'Science', tags:['study','science']};
     const id = filename.replace(/[^a-zA-Z0-9]/g, '_');
-    const baseName = filename.replace(/\.(jpg|jpeg|png|webp)$/i, '');
+    const title = getReadablePostTitle(filename, meta.category, index);
     POSTS[id] = {
         id,
-        title: `Diagram ${baseName.toUpperCase()}`,
+        title,
         author: AUTHOR_NAMES[index % AUTHOR_NAMES.length],
         category: meta.category,
-        tags: meta.tags,
+        tags: [...meta.tags, 'study'],
         image: `post_images/${filename}`,
         likes: 50 + ((index * 7) % 200),
         content: `A helpful ${meta.category.toLowerCase()} diagram focused on ${meta.tags.join(', ')}.`, 
-        type: 'post'
+        type: 'post',
+        points: 5
     };
 });
 
@@ -557,9 +609,13 @@ function addUploadCardToFeed(upload) {
     card.dataset.category = upload.category || 'General';
     card.dataset.tags = (upload.tags || []).join(',');
 
+    const mediaPreview = upload.mediaType === 'video'
+        ? `<video controls src="${upload.fileData || upload.image}" preload="metadata"></video>`
+        : `<img src="${upload.fileData || upload.image}" alt="${upload.title}">`;
+
     card.innerHTML = `
         <div class="diagram-placeholder">
-            ${upload.image ? `<img src="${upload.image}" alt="${upload.title}">` : `<span>${upload.type === 'video' ? '🎥' : '📊'}</span>`}
+            ${upload.fileData || upload.image ? mediaPreview : `<span>${upload.type === 'video' ? '🎥' : '📊'}</span>`}
             <p>${upload.title}</p>
         </div>
         <div class="card-info">
@@ -567,6 +623,7 @@ function addUploadCardToFeed(upload) {
             <p class="card-author">by ${upload.author}</p>
             <div class="card-meta">
                 <span>${upload.category}</span>
+                <span>${upload.points || (upload.type === 'video' ? 15 : 5)} pts</span>
                 <span class="like-btn">❤️ ${upload.likes || 0}</span>
                 <button class="save-btn" title="Save">🔖</button>
             </div>
@@ -633,6 +690,8 @@ function publishUpload() {
     const categoryInput = document.getElementById('uploadCategory');
     const descriptionInput = document.getElementById('uploadDescription');
     const typeInput = document.getElementById('uploadType');
+    const accuracy = document.querySelector('input[name="uploadAccuracy"]:checked')?.value || 'accurate';
+    const fileInput = document.getElementById('uploadMediaInput');
     const visibility = document.querySelector('input[name="uploadVisibility"]:checked')?.value || 'public';
     const status = document.getElementById('uploadStatus');
 
@@ -641,6 +700,7 @@ function publishUpload() {
     const category = categoryInput.value.trim() || 'General';
     const content = descriptionInput.value.trim();
     const type = typeInput.value;
+    const aiTag = accuracy === 'accurate' ? 'AI Accurate' : 'AI Not Accurate';
 
     if (!title || !content) {
         status.textContent = 'Please enter a title and description to publish.';
@@ -656,24 +716,83 @@ function publishUpload() {
         likes: 0,
         content: `${content} (${visibility === 'private' ? 'Private' : 'Public'})`,
         type,
-        visibility
+        visibility,
+        tags: [aiTag, category.toLowerCase(), 'study'],
+        points: type === 'video' ? 15 : 5
     };
 
-    const uploads = getUserUploads();
-    uploads.push(upload);
-    setUserUploads(uploads);
-    POSTS[id] = upload;
-    addUploadCardToFeed(upload);
+    const processUpload = (fileData, mediaType) => {
+        if (fileData) {
+            upload.fileData = fileData;
+            upload.mediaType = mediaType;
+        }
+        const uploads = getUserUploads();
+        uploads.push(upload);
+        setUserUploads(uploads);
+        POSTS[id] = upload;
+        addUploadCardToFeed(upload);
 
-    const reward = 15;
-    setUserPoints(getUserPoints() + reward);
-    updatePointsLabel();
+        const reward = upload.points;
+        setUserPoints(getUserPoints() + reward);
+        updatePointsLabel();
 
-    titleInput.value = '';
-    categoryInput.value = '';
-    descriptionInput.value = '';
-    status.textContent = `Published! You've earned ${reward} coins.`;
-    filterDiagrams();
+        titleInput.value = '';
+        categoryInput.value = '';
+        descriptionInput.value = '';
+        if (fileInput) fileInput.value = '';
+        status.textContent = `Published! You've earned ${reward} points.`;
+        filterDiagrams();
+    };
+
+    if (fileInput && fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const accepted = file.type.startsWith('image/') || file.type.startsWith('video/');
+        if (!accepted) {
+            status.textContent = 'Please attach an image or video file.';
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+            processUpload(reader.result, file.type.startsWith('video/') ? 'video' : 'image');
+        };
+        reader.readAsDataURL(file);
+    } else {
+        processUpload(null, null);
+    }
+}
+
+function showUploadPreview() {
+    const preview = document.getElementById('uploadPreview');
+    const fileInput = document.getElementById('uploadMediaInput');
+    if (!preview || !fileInput || !fileInput.files.length) {
+        if (preview) preview.innerHTML = '';
+        return;
+    }
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+        preview.innerHTML = file.type.startsWith('video/')
+            ? `<video controls src="${reader.result}" preload="metadata"></video>`
+            : `<img src="${reader.result}" alt="Upload preview">`;
+    };
+    reader.readAsDataURL(file);
+}
+
+function showThreadPreview() {
+    const preview = document.getElementById('threadPreview');
+    const fileInput = document.getElementById('threadMediaInput');
+    if (!preview || !fileInput || !fileInput.files.length) {
+        if (preview) preview.innerHTML = '';
+        return;
+    }
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+        preview.innerHTML = file.type.startsWith('video/')
+            ? `<video controls src="${reader.result}" preload="metadata"></video>`
+            : `<img src="${reader.result}" alt="Thread preview">`;
+    };
+    reader.readAsDataURL(file);
 }
 
 function attachUploadedCardStates() {
@@ -885,14 +1004,88 @@ function updateSessionButtons() {
     });
 }
 
+function getSessionParticipants() {
+    try { return JSON.parse(localStorage.getItem('sessionParticipants') || '{}'); } catch(e) { return {}; }
+}
+
+function setSessionParticipants(value) {
+    localStorage.setItem('sessionParticipants', JSON.stringify(value));
+}
+
+function addSessionParticipant(sessionId, name) {
+    const participants = getSessionParticipants();
+    participants[sessionId] = participants[sessionId] || [];
+    if (!participants[sessionId].includes(name)) {
+        participants[sessionId].push(name);
+    }
+    setSessionParticipants(participants);
+}
+
+function getSessionStatus(sessionId) {
+    const statuses = JSON.parse(localStorage.getItem('sessionStatuses') || '{}');
+    return statuses[sessionId] || 'Starting soon';
+}
+
+function setSessionStatus(sessionId, status) {
+    const statuses = JSON.parse(localStorage.getItem('sessionStatuses') || '{}');
+    statuses[sessionId] = status;
+    localStorage.setItem('sessionStatuses', JSON.stringify(statuses));
+}
+
+function renderSessionLobby(sessionId) {
+    const lobby = document.getElementById('sessionLobby');
+    const titleEl = document.getElementById('lobbySessionTitle');
+    const statusEl = document.getElementById('lobbySessionStatus');
+    const descriptionEl = document.getElementById('lobbySessionDescription');
+    const participantsEl = document.getElementById('lobbyParticipants');
+    const participateBtn = document.getElementById('participateSessionBtn');
+    const session = STUDY_SESSIONS.find(s => s.id === sessionId);
+    if (!lobby || !session) return;
+
+    const joined = getJoinedSessions();
+    const participants = getSessionParticipants()[sessionId] || [];
+    const isJoined = joined.includes(sessionId);
+
+    titleEl.textContent = session.title;
+    descriptionEl.textContent = session.description;
+    statusEl.textContent = getSessionStatus(sessionId);
+
+    participantsEl.innerHTML = '';
+    if (participants.length === 0) {
+        participantsEl.innerHTML = '<div class="session-participant">No one has joined yet. Be the first!</div>';
+    } else {
+        participants.forEach(name => {
+            const participant = document.createElement('div');
+            participant.className = 'session-participant';
+            participant.textContent = name;
+            participantsEl.appendChild(participant);
+        });
+    }
+
+    participateBtn.textContent = isJoined ? 'Participate now' : 'Join session first';
+    participateBtn.disabled = !isJoined;
+    participateBtn.onclick = () => {
+        if (!isJoined) {
+            alert('Please join the session first.');
+            return;
+        }
+        setSessionStatus(sessionId, 'Live now');
+        statusEl.textContent = 'Live now';
+        alert(`You are now participating in ${session.title}.`);
+    };
+    lobby.style.display = 'block';
+}
+
 function handleJoinSession(sessionId) {
     const joined = getJoinedSessions();
     if (!joined.includes(sessionId)) {
         joined.push(sessionId);
         setJoinedSessions(joined);
+        addSessionParticipant(sessionId, 'You');
         renderJoinedSessions();
         updateSessionButtons();
     }
+    renderSessionLobby(sessionId);
 }
 
 function getSavedPosts() {
@@ -1439,13 +1632,32 @@ createFolderBtn?.addEventListener('click', () => {
     if (folderName) createMaterialFolder(folderName.trim());
 });
 
-// Session join buttons
+// Session join buttons and lobby view controls
 document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.join-session-btn');
-    if (!btn) return;
-    const sessionId = btn.dataset.sessionId;
-    if (sessionId) handleJoinSession(sessionId);
+    const joinBtn = e.target.closest('.join-session-btn');
+    if (joinBtn) {
+        const sessionId = joinBtn.dataset.sessionId;
+        if (sessionId) handleJoinSession(sessionId);
+        return;
+    }
+    const viewBtn = e.target.closest('.view-session-btn');
+    if (viewBtn) {
+        const sessionId = viewBtn.dataset.sessionId;
+        if (sessionId) renderSessionLobby(sessionId);
+        return;
+    }
+    const closeBtn = e.target.closest('#closeLobbyBtn');
+    if (closeBtn) {
+        const lobby = document.getElementById('sessionLobby');
+        if (lobby) lobby.style.display = 'none';
+    }
 });
+
+const uploadMediaInput = document.getElementById('uploadMediaInput');
+uploadMediaInput?.addEventListener('change', showUploadPreview);
+
+const threadMediaInput = document.getElementById('threadMediaInput');
+threadMediaInput?.addEventListener('change', showThreadPreview);
 
 // My Study Sessions shortcut
 const mySessionsBtn = document.getElementById('mySessionsBtn');

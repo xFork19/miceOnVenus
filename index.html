@@ -332,7 +332,10 @@
                                 <p>Focus group for upcoming midterms — rapid review and quiz practice.</p>
                                 <p class="session-meta">Tue 5:30 PM · 45 min · 8 people joined</p>
                             </div>
-                            <button class="join-session-btn" data-session-id="s1">Join</button>
+                            <div class="session-actions">
+                                <button class="view-session-btn" data-session-id="s1">View lobby</button>
+                                <button class="join-session-btn" data-session-id="s1">Join</button>
+                            </div>
                         </div>
                         <div class="session-card" data-session-id="s2">
                             <div>
@@ -340,7 +343,10 @@
                                 <p>Collaborative problem session with guided examples and Q&A.</p>
                                 <p class="session-meta">Wed 7:00 PM · 60 min · 12 people joined</p>
                             </div>
-                            <button class="join-session-btn" data-session-id="s2">Join</button>
+                            <div class="session-actions">
+                                <button class="view-session-btn" data-session-id="s2">View lobby</button>
+                                <button class="join-session-btn" data-session-id="s2">Join</button>
+                            </div>
                         </div>
                         <div class="session-card" data-session-id="s3">
                             <div>
@@ -348,7 +354,27 @@
                                 <p>Casual study space for vocabulary, grammar, and speaking practice.</p>
                                 <p class="session-meta">Thu 4:00 PM · 40 min · 10 people joined</p>
                             </div>
-                            <button class="join-session-btn" data-session-id="s3">Join</button>
+                            <div class="session-actions">
+                                <button class="view-session-btn" data-session-id="s3">View lobby</button>
+                                <button class="join-session-btn" data-session-id="s3">Join</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="sessionLobby" class="session-lobby" style="display:none;">
+                        <div class="session-lobby-header">
+                            <div>
+                                <h4 id="lobbySessionTitle">Session Lobby</h4>
+                                <p id="lobbySessionStatus">Select a session to see who is attending.</p>
+                            </div>
+                            <button id="closeLobbyBtn" class="session-action-btn secondary">Close lobby</button>
+                        </div>
+                        <p id="lobbySessionDescription" class="session-lobby-description"></p>
+                        <div class="session-participants-section">
+                            <h5>Participants</h5>
+                            <div id="lobbyParticipants" class="session-participants"></div>
+                        </div>
+                        <div class="session-lobby-actions">
+                            <button id="participateSessionBtn" class="session-action-btn">Join the room</button>
                         </div>
                     </div>
                 </div>
@@ -374,9 +400,16 @@
                             <label><input type="radio" name="uploadVisibility" value="public" checked> Public</label>
                             <label><input type="radio" name="uploadVisibility" value="private"> Private</label>
                         </div>
-                        <label class="upload-label">Description
-                            <textarea id="uploadDescription" class="upload-textarea" placeholder="Write a short description..."></textarea>
+                        <label class="upload-label">Attach image or video
+                            <input id="uploadMediaInput" class="upload-input" type="file" accept="image/*,video/*" />
                         </label>
+                        <label class="upload-label">AI accuracy
+                            <div class="accuracy-control">
+                                <label><input type="radio" name="uploadAccuracy" value="accurate" checked> Accurate</label>
+                                <label><input type="radio" name="uploadAccuracy" value="inaccurate"> Inaccurate</label>
+                            </div>
+                        </label>
+                        <div id="uploadPreview" class="upload-preview"></div>
                         <button id="publishUploadBtn" class="upload-publish-btn" type="button">Publish</button>
                         <div id="uploadStatus" class="upload-status"></div>
                     </div>
@@ -411,6 +444,14 @@
                                 <input id="newThreadAuthor" type="text" placeholder="e.g. student123" />
                                 <label>Message</label>
                                 <textarea id="newThreadMessage" placeholder="Share your question or advice..."></textarea>
+                                <label>Attach image or video</label>
+                                <input id="threadMediaInput" type="file" accept="image/*,video/*" />
+                                <label>AI accuracy</label>
+                                <div class="accuracy-control">
+                                    <label><input type="radio" name="threadAccuracy" value="accurate" checked> Accurate</label>
+                                    <label><input type="radio" name="threadAccuracy" value="inaccurate"> Inaccurate</label>
+                                </div>
+                                <div id="threadPreview" class="discussion-file-preview"></div>
                                 <div class="discussion-form-actions">
                                     <button id="createThreadBtn" type="button">Post Thread</button>
                                     <button id="cancelThreadBtn" type="button">Cancel</button>
