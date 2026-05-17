@@ -106,48 +106,40 @@ body.dark-mode .points-box {
 
 .navbar-right {
     display: flex;
-    gap: 16px;
+    gap: 22px;
     align-items: center;
 }
 
-.profile-btn,
-.nav-btn {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    transition: background-color 0.2s ease;
-}
-
-.nav-btn {
-    border-radius: 6px;
+.top-navbar .navbar-right .nav-btn,
+.top-navbar .navbar-right .profile-btn,
+.top-navbar .navbar-right .settings-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+    padding: 10px 18px;
+    border: 1px solid #d1d5db;
+    border-radius: 14px;
+    background-color: #fff;
+    color: #334155;
     font-size: 14px;
-    font-weight: 500;
-    color: #555;
-    padding: 8px 12px;
-    border-radius: 6px;
-    background-color: transparent;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 
-.nav-btn:hover {
-    background-color: #f0f0f0;
-    color: #333;
+.top-navbar .navbar-right .nav-btn:hover,
+.top-navbar .navbar-right .profile-btn:hover,
+.top-navbar .navbar-right .settings-btn:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
 }
 
-.nav-btn.active {
+.top-navbar .navbar-right .nav-btn.active {
     background-color: #667eea;
     color: #fff;
-}
-
-.profile-btn {
-    font-size: 20px;
-}
-
-.profile-btn:hover {
-    background-color: #f0f0f0;
+    border-color: #667eea;
 }
 
 /* Main Container */
