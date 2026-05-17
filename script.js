@@ -176,6 +176,319 @@ function clearCart() {
     renderCart();
 }
 
+const DISCUSSION_BOARDS = [
+    {
+        id: 'd1',
+        title: 'AP Exam Study Strategies',
+        description: 'Discuss AP review plans, resources, and time management for exam day.',
+        joined: 238,
+        threads: [
+            {
+                id: 'dt1',
+                boardId: 'd1',
+                title: 'Best AP Calculus practice schedule?',
+                author: 'Maya King',
+                views: 120,
+                replies: [
+                    { author: 'Alex Pat', content: 'I do short focused practice every day and review free-response problems on weekends.' },
+                    { author: 'Maya King', content: 'Past FRQs from 2015-2020 helped me the most.' }
+                ]
+            },
+            {
+                id: 'dt2',
+                boardId: 'd1',
+                title: 'How do you survive AP Physics multiple choice?',
+                author: 'Liam Patel',
+                views: 89,
+                replies: [
+                    { author: 'Olivia Brooks', content: 'Use process of elimination and watch the units carefully on each answer.' },
+                    { author: 'Leo Grant', content: 'Practice with timed sets so the pacing feels normal.' }
+                ]
+            }
+        ]
+    },
+    {
+        id: 'd2',
+        title: 'SAT Prep & Strategies',
+        description: 'Talk about test strategies, practice materials, and score improvement tips.',
+        joined: 194,
+        threads: [
+            {
+                id: 'dt3',
+                boardId: 'd2',
+                title: 'Best SAT math resources?',
+                author: 'Ava Chen',
+                views: 75,
+                replies: [
+                    { author: 'Noah Rivera', content: 'Khan Academy and daily timed drills were game changers.' },
+                    { author: 'Mia Thompson', content: 'I liked using sample problem sets by topic and then reviewing mistakes.' }
+                ]
+            },
+            {
+                id: 'dt4',
+                boardId: 'd2',
+                title: 'Reading section timing tips',
+                author: 'Nora Woods',
+                views: 104,
+                replies: [
+                    { author: 'Ethan Nguyen', content: 'Skim passages first and focus on main idea questions quickly.' },
+                    { author: 'Zoe Brooks', content: 'Underline evidence and watch out for extreme answer choices.' }
+                ]
+            }
+        ]
+    },
+    {
+        id: 'd3',
+        title: 'Calculus Study Strategies',
+        description: 'Share calculus notes, problem-solving methods, and review tactics.',
+        joined: 276,
+        threads: [
+            {
+                id: 'dt5',
+                boardId: 'd3',
+                title: 'How do you remember derivatives rules?',
+                author: 'Kai Shah',
+                views: 98,
+                replies: [
+                    { author: 'Luna Carter', content: 'I use flashcards and write them out from memory every couple of days.' },
+                    { author: 'Iris Murphy', content: 'Grouping the rules by function type helped me retain them.' }
+                ]
+            },
+            {
+                id: 'dt6',
+                boardId: 'd3',
+                title: 'AP Calculus practice exam recommendations',
+                author: 'Eli Harper',
+                views: 142,
+                replies: [
+                    { author: 'Ruby Gray', content: 'The official College Board tests are the best predictor of exam style.' },
+                    { author: 'Finn Brooks', content: 'I also liked using prep books with explanations for every question.' }
+                ]
+            }
+        ]
+    }
+];
+
+const DISCUSSION_PROFILES = {
+    'Maya King': { name: 'Maya King', bio: 'AP exam enthusiast and study strategy sharer.', posts: 12, joinedBoards: 3, recent: ['Best AP Calculus practice schedule?', 'Study tips for late-night review'] },
+    'Alex Pat': { name: 'Alex Pat', bio: 'Senior who loves dividing study sessions into small chunks.', posts: 8, joinedBoards: 2, recent: ['Best AP Calculus practice schedule?', 'How to use flashcards efficiently'] },
+    'Liam Patel': { name: 'Liam Patel', bio: 'Physics student sharing exam pacing tips.', posts: 6, joinedBoards: 2, recent: ['How do you survive AP Physics multiple choice?'] },
+    'Ava Chen': { name: 'Ava Chen', bio: 'SAT prep coach and math practice leader.', posts: 11, joinedBoards: 3, recent: ['Best SAT math resources?', 'Vocabulary memorization tricks'] },
+    'Nora Woods': { name: 'Nora Woods', bio: 'Reading section expert helping students find their rhythm.', posts: 9, joinedBoards: 2, recent: ['Reading section timing tips'] }
+};
+
+let currentDiscussionBoard = 'd1';
+let currentDiscussionThread = null;
+
+function getSavedDiscussionThreads() {
+    try { return JSON.parse(localStorage.getItem('savedDiscussionThreads') || '[]'); } catch (e) { return []; }
+}
+
+function setSavedDiscussionThreads(arr) {
+    localStorage.setItem('savedDiscussionThreads', JSON.stringify(arr));
+}
+
+function getSavedReplies(threadId) {
+    try { return JSON.parse(localStorage.getItem(`discussionReplies_${threadId}`) || '[]'); } catch (e) { return []; }
+}
+
+function setSavedReplies(threadId, arr) {
+    localStorage.setItem(`discussionReplies_${threadId}`, JSON.stringify(arr));
+}
+
+function getDiscussionBoard(boardId) {
+    return DISCUSSION_BOARDS.find(board => board.id === boardId);
+}
+
+function getDiscussionThreads(boardId) {
+    const savedThreads = getSavedDiscussionThreads().filter(thread => thread.boardId === boardId);
+    const board = getDiscussionBoard(boardId);
+    return board ? [...board.threads, ...savedThreads] : savedThreads;
+}
+
+function renderDiscussionBoards() {
+    const boardList = document.getElementById('discussionBoardList');
+    if (!boardList) return;
+    boardList.innerHTML = '';
+    DISCUSSION_BOARDS.forEach(board => {
+        const item = document.createElement('div');
+        item.className = `discussion-card${board.id === currentDiscussionBoard ? ' active' : ''}`;
+        item.dataset.boardId = board.id;
+        item.innerHTML = `
+            <h4>${board.title}</h4>
+            <p>${board.description}</p>
+            <span class="discussion-meta">Joined: ${board.joined} students</span>
+        `;
+        item.addEventListener('click', () => {
+            showDiscussionBoard(board.id);
+        });
+        boardList.appendChild(item);
+    });
+}
+
+function showDiscussionBoard(boardId) {
+    currentDiscussionBoard = boardId;
+    currentDiscussionThread = null;
+    const board = getDiscussionBoard(boardId);
+    if (!board) return;
+    document.getElementById('discussionBoardTitle').textContent = board.title;
+    document.getElementById('discussionBoardDescription').textContent = board.description;
+    document.getElementById('discussionThreadDetail').style.display = 'none';
+    document.getElementById('threadList').style.display = 'block';
+    document.getElementById('newThreadForm').style.display = 'none';
+    document.getElementById('discussionProfileView')?.style.setProperty('display', 'none');
+    renderDiscussionBoards();
+    renderDiscussionThreadList(boardId);
+}
+
+function renderDiscussionThreadList(boardId) {
+    const threadList = document.getElementById('threadList');
+    if (!threadList) return;
+    const threads = getDiscussionThreads(boardId);
+    threadList.innerHTML = '';
+    threads.forEach(thread => {
+        const card = document.createElement('div');
+        card.className = 'discussion-thread-card';
+        card.dataset.threadId = thread.id;
+        card.innerHTML = `
+            <div class="thread-meta-row">
+                <strong>${thread.title}</strong>
+                <span>${thread.views} views</span>
+            </div>
+            <p>Started by <button class="thread-author-link">${thread.author}</button></p>
+        `;
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('.thread-author-link')) return;
+            openDiscussionThread(thread.id);
+        });
+        card.querySelector('.thread-author-link')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showProfile(thread.author);
+        });
+        threadList.appendChild(card);
+    });
+}
+
+function openDiscussionThread(threadId) {
+    const thread = getDiscussionThreads(currentDiscussionBoard).find(t => t.id === threadId);
+    if (!thread) return;
+    currentDiscussionThread = threadId;
+    document.getElementById('discussionThreadDetail').style.display = 'block';
+    document.getElementById('threadList').style.display = 'none';
+    document.getElementById('newThreadForm').style.display = 'none';
+    document.getElementById('discussionProfileView')?.style.setProperty('display', 'none');
+    document.getElementById('threadTitle').textContent = thread.title;
+    const authorBtn = document.getElementById('threadAuthor');
+    authorBtn.textContent = thread.author;
+    authorBtn.onclick = () => showProfile(thread.author);
+    document.getElementById('threadViews').textContent = `${thread.views + 1} views`;
+    const messagesBox = document.getElementById('threadMessages');
+    messagesBox.innerHTML = '';
+    const baseReplies = thread.replies || [];
+    const savedReplies = getSavedReplies(threadId);
+    const allReplies = [...baseReplies, ...savedReplies];
+    allReplies.forEach(reply => {
+        const row = document.createElement('div');
+        row.className = 'thread-message';
+        row.innerHTML = `
+            <button class="message-author">${reply.author}</button>
+            <p>${reply.content}</p>
+        `;
+        row.querySelector('.message-author')?.addEventListener('click', () => showProfile(reply.author));
+        messagesBox.appendChild(row);
+    });
+}
+
+function showNewThreadForm() {
+    document.getElementById('newThreadForm').style.display = 'block';
+    document.getElementById('discussionThreadDetail').style.display = 'none';
+    document.getElementById('threadList').style.display = 'block';
+    document.getElementById('discussionProfileView')?.style.setProperty('display', 'none');
+}
+
+function cancelNewThread() {
+    document.getElementById('newThreadForm').style.display = 'none';
+}
+
+function createNewThread() {
+    const title = document.getElementById('newThreadTitle')?.value.trim();
+    const author = document.getElementById('newThreadAuthor')?.value.trim() || 'Anonymous';
+    const message = document.getElementById('newThreadMessage')?.value.trim();
+    if (!title || !message) {
+        alert('Please add both a thread title and a message.');
+        return;
+    }
+    const savedThreads = getSavedDiscussionThreads();
+    const newThread = {
+        id: `new_${Date.now()}`,
+        boardId: currentDiscussionBoard,
+        title,
+        author,
+        views: 0,
+        replies: [{ author, content: message }]
+    };
+    savedThreads.push(newThread);
+    setSavedDiscussionThreads(savedThreads);
+    document.getElementById('newThreadTitle').value = '';
+    document.getElementById('newThreadAuthor').value = '';
+    document.getElementById('newThreadMessage').value = '';
+    document.getElementById('newThreadForm').style.display = 'none';
+    renderDiscussionThreadList(currentDiscussionBoard);
+    openDiscussionThread(newThread.id);
+}
+
+function replyToThread(e) {
+    e.preventDefault();
+    if (!currentDiscussionThread) return;
+    const author = document.getElementById('replyAuthor')?.value.trim() || 'Anonymous';
+    const message = document.getElementById('replyMessage')?.value.trim();
+    if (!message) return;
+    const replies = getSavedReplies(currentDiscussionThread);
+    replies.push({ author, content: message });
+    setSavedReplies(currentDiscussionThread, replies);
+    document.getElementById('replyMessage').value = '';
+    document.getElementById('replyAuthor').value = '';
+    openDiscussionThread(currentDiscussionThread);
+}
+
+function showProfile(author) {
+    // remember which view opened the profile
+    if (singlePostView && singlePostView.style.display && singlePostView.style.display !== 'none') lastViewBeforeProfile = 'singlePost';
+    else if (document.getElementById('discussionsView')?.style.display === 'block') lastViewBeforeProfile = 'discussions';
+    else lastViewBeforeProfile = currentView || 'posts';
+
+    const profile = DISCUSSION_PROFILES[author] || { name: author, bio: 'Active member of the study community.', posts: 0, joinedBoards: 1, recent: [] };
+    document.getElementById('discussionProfileView').style.display = 'block';
+    // hide other views
+    document.getElementById('discussionsView').style.display = 'none';
+    document.getElementById('discussionThreadDetail').style.display = 'none';
+    if (singlePostView) singlePostView.style.display = 'none';
+    if (diagramGrid) diagramGrid.style.display = 'none';
+    document.getElementById('profileName').textContent = profile.name;
+    document.getElementById('profileBio').textContent = profile.bio;
+    document.getElementById('profilePostsCount').textContent = `Posts: ${profile.posts}`;
+    document.getElementById('profileJoinedCount').textContent = `Joined Boards: ${profile.joinedBoards}`;
+    const recent = document.getElementById('profileRecentPosts');
+    recent.innerHTML = '<h4>Recent posts</h4>' + (profile.recent.length ? profile.recent.map(p => `<div class="profile-post">${p}</div>`).join('') : '<p>No recent posts yet.</p>');
+}
+
+function closeProfileView() {
+    document.getElementById('discussionProfileView').style.display = 'none';
+    // restore previous view
+    if (lastViewBeforeProfile === 'singlePost') {
+        if (singlePostView) singlePostView.style.display = '';
+    } else if (lastViewBeforeProfile === 'discussions') {
+        document.getElementById('discussionsView').style.display = 'block';
+    } else {
+        if (diagramGrid) diagramGrid.style.display = '';
+    }
+}
+
+function backToThreadList() {
+    document.getElementById('discussionThreadDetail').style.display = 'none';
+    document.getElementById('threadList').style.display = 'block';
+}
+
 const IMAGE_FILE_LIST = [
     'a1.jpg','a10.jpg','a2.jpg','a3.png','a4.jpg','a5.jpg','a6.png','a7.jpg','a8.jpg','a9.jpg',
     'b1.png','b10.jpg','b2.jpg','b3.jpg','b4.png','b5.jpg','b6.png','b7.jpg','b8.jpg','b9.jpg',
@@ -800,6 +1113,16 @@ function openSinglePost(id) {
         return false;
     };
 
+    // allow opening author's profile from single post view
+    if (postAuthor) {
+        postAuthor.style.cursor = 'pointer';
+        postAuthor.title = `View ${post.author}'s profile`;
+        postAuthor.onclick = (e) => {
+            e.stopPropagation();
+            showProfile(post.author);
+        };
+    }
+
     closePostView.onclick = () => {
         singlePostView.style.display = 'none';
         diagramGrid.style.display = '';
@@ -817,6 +1140,7 @@ function renderCommentsInline(id) {
 
 // Current view state
 let currentView = 'posts';
+let lastViewBeforeProfile = null;
 
 // Posts and Videos button functionality
 const postsBtn = document.querySelector('.posts-btn');
@@ -882,6 +1206,7 @@ function switchView(view) {
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('active');
     });
+    document.getElementById('discussionProfileView')?.style.setProperty('display', 'none');
     
     const sessionsViewElement = document.getElementById('sessionsView');
     const discussionViewElement = discussionsView;
@@ -919,6 +1244,8 @@ function switchView(view) {
         sessionsViewElement.style.display = 'none';
         uploadView?.style.setProperty('display', 'none');
         discussionViewElement.style.display = 'block';
+        document.getElementById('discussionProfileView')?.style.setProperty('display', 'none');
+        showDiscussionBoard(currentDiscussionBoard);
         shopViewElement.style.display = 'none';
     } else if (view === 'shop') {
         shopBtn?.classList.add('active');
@@ -1090,6 +1417,20 @@ shopView?.addEventListener('click', (e) => {
 });
 
 updatePointsLabel();
+
+const newThreadBtn = document.getElementById('newThreadBtn');
+const cancelThreadBtn = document.getElementById('cancelThreadBtn');
+const createThreadBtn = document.getElementById('createThreadBtn');
+const replyForm = document.getElementById('replyForm');
+const closeProfileViewBtn = document.getElementById('closeProfileView');
+const backToThreadsBtn = document.getElementById('backToThreadsBtn');
+
+newThreadBtn?.addEventListener('click', showNewThreadForm);
+cancelThreadBtn?.addEventListener('click', cancelNewThread);
+createThreadBtn?.addEventListener('click', createNewThread);
+replyForm?.addEventListener('submit', replyToThread);
+closeProfileViewBtn?.addEventListener('click', closeProfileView);
+backToThreadsBtn?.addEventListener('click', backToThreadList);
 
 // Create folder button
 const createFolderBtn = document.getElementById('createFolderBtn');

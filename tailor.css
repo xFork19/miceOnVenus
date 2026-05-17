@@ -1170,6 +1170,72 @@ body.dark-mode .points-box {
     color: #555;
 }
 
+/* Discussion boards styling */
+.discussions-view {
+    display: block;
+}
+.discussions-content {
+    display: flex;
+    gap: 20px;
+    margin-top: 14px;
+}
+.discussion-board-list {
+    width: 280px;
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 8px 24px rgba(47,60,80,0.06);
+    border: 1px solid #f0f3ff;
+}
+.discussion-board-list h4 { margin-bottom: 12px; }
+.discussion-board-list-items { display:flex; flex-direction:column; gap:12px; }
+.discussion-card {
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    background: linear-gradient(180deg,#fff,#fbfdff);
+    border: 1px solid #eef4ff;
+}
+.discussion-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(47,60,80,0.06); }
+.discussion-card.active { border-color: #667eea; box-shadow: 0 8px 24px rgba(102,126,234,0.12); }
+
+.discussion-main-panel { flex:1; display:flex; flex-direction:column; gap:12px; }
+.discussion-board-info { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.discussion-board-info h4 { margin:0; font-size:20px; }
+.new-thread-btn { background:#667eea; color:#fff; border:none; padding:10px 14px; border-radius:12px; cursor:pointer; }
+
+.discussion-thread-list { display:flex; flex-direction:column; gap:12px; margin-top:12px; }
+.discussion-thread-card { background:#fff; border:1px solid #f0f3ff; border-radius:12px; padding:14px; box-shadow:0 6px 18px rgba(47,60,80,0.04); cursor:pointer; }
+.discussion-thread-card .thread-meta-row { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.discussion-thread-card strong { font-size:16px; }
+.thread-author-link { background:none; border:none; color:#667eea; cursor:pointer; font-weight:700; }
+
+.discussion-thread-detail { background:#fff; border-radius:14px; padding:18px; box-shadow:0 10px 30px rgba(47,60,80,0.06); }
+.discussion-thread-header { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.back-to-threads-btn { background:#f0f4ff; border:none; padding:8px 12px; border-radius:10px; cursor:pointer; }
+
+.thread-messages { display:flex; flex-direction:column; gap:12px; margin-top:12px; }
+.thread-message { padding:12px; border-radius:12px; background:#fbfdff; border:1px solid #eef4ff; display:flex; gap:12px; align-items:flex-start; }
+.thread-message p { margin:0; color:#333; line-height:1.4; }
+.message-author, .thread-author { background:none; border:none; color:#2a2a72; font-weight:800; cursor:pointer; }
+
+/* Profile view improvements */
+.discussion-profile-view { padding:18px; display:block; }
+.discussion-profile-header { background:#fff; border-radius:12px; padding:18px; box-shadow:0 8px 24px rgba(47,60,80,0.06); display:flex; flex-direction:column; gap:12px; }
+.discussion-profile-header h3 { margin:0; font-size:20px; }
+.discussion-profile-header p { color:#5f6a7a; }
+.profile-stats { display:flex; gap:16px; color:#666; font-weight:700; }
+.discussion-profile-posts { margin-top:12px; display:flex; flex-direction:column; gap:10px; }
+.profile-post { background:#fff; border-radius:12px; padding:12px; border:1px solid #f1f4ff; }
+
+/* Make inline author clickable */
+.post-author { cursor: pointer; color: #2a2a72; font-weight:700; }
+
+/* Slight typography polish */
+body { font-size:15px; }
+
+
 .card-info {
     padding: 12px;
     background-color: #fff;
