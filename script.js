@@ -273,8 +273,8 @@ const DISCUSSION_PROFILES = {
     'Maya King': { name: 'Maya King', bio: 'AP exam enthusiast and study strategy sharer.', posts: 12, joinedBoards: 3, recent: ['Best AP Calculus practice schedule?', 'Study tips for late-night review'] },
     'Alex Pat': { name: 'Alex Pat', bio: 'Senior who loves dividing study sessions into small chunks.', posts: 8, joinedBoards: 2, recent: ['Best AP Calculus practice schedule?', 'How to use flashcards efficiently'] },
     'Liam Patel': { name: 'Liam Patel', bio: 'Physics student sharing exam pacing tips.', posts: 6, joinedBoards: 2, recent: ['How do you survive AP Physics multiple choice?'] },
-    'Ava Chen': { name: 'Ava Chen', bio: 'SAT prep coach and math practice leader.', posts: 11, joinedBoards: 3, recent: ['Best SAT math resources?', 'Vocabulary memorization tricks'] },
-    'Nora Woods': { name: 'Nora Woods', bio: 'Reading section expert helping students find their rhythm.', posts: 9, joinedBoards: 2, recent: ['Reading section timing tips'] }
+    'Ava Chen': { name: 'Ava Chen', bio: 'SAT prep coach and math practice leader.', posts: 11, followers: 320, joinedBoards: 3, recent: ['Best SAT math resources?', 'Vocabulary memorization tricks'] },
+    'Nora Woods': { name: 'Nora Woods', bio: 'Reading section expert helping students find their rhythm.', posts: 9, followers: 276, joinedBoards: 2, recent: ['Reading section timing tips'] }
 };
 
 let currentDiscussionBoard = 'd1';
@@ -505,9 +505,22 @@ function showProfile(author) {
     document.getElementById('profileName').textContent = profile.name;
     document.getElementById('profileBio').textContent = profile.bio;
     document.getElementById('profilePostsCount').textContent = `Posts: ${profile.posts}`;
+    document.getElementById('profileFollowersCount').textContent = `Followers: ${profile.followers || 0}`;
     document.getElementById('profileJoinedCount').textContent = `Joined Boards: ${profile.joinedBoards}`;
+
+    const authorPosts = Object.values(POSTS).filter(post => post.author === author);
     const recent = document.getElementById('profileRecentPosts');
-    recent.innerHTML = '<h4>Recent posts</h4>' + (profile.recent.length ? profile.recent.map(p => `<div class="profile-post">${p}</div>`).join('') : '<p>No recent posts yet.</p>');
+    recent.innerHTML = '<h4>Other posts</h4>' + (authorPosts.length
+        ? authorPosts.slice(0, 5).map(p => `<button class="profile-post-link" data-post-id="${p.id}">${p.title}</button>`).join('')
+        : '<p>No other posts yet.</p>');
+
+    recent.querySelectorAll('.profile-post-link').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const postId = button.dataset.postId;
+            if (postId) openSinglePost(postId);
+        });
+    });
 }
 
 function closeProfileView() {
@@ -619,7 +632,7 @@ function addUploadCardToFeed(upload) {
         </div>
         <div class="card-info">
             <h3>${upload.title}</h3>
-            <p class="card-author">by ${upload.author}</p>
+            <p class="card-author">by <button class="profile-link">${upload.author}</button></p>
             <div class="card-meta">
                 <span>${upload.category}</span>
                 <span>${upload.points || (upload.type === 'video' ? 15 : 5)} pts</span>
@@ -681,6 +694,12 @@ function attachCardInteractivity(card) {
         }
         setSavedPosts(saved);
         renderMaterialFolders();
+    });
+
+    const profileLink = card.querySelector('.profile-link');
+    profileLink?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showProfile(upload.author);
     });
 }
 

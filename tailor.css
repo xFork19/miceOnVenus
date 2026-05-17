@@ -1415,7 +1415,8 @@ body.dark-mode .points-box {
 .discussion-thread-card { background:#fff; border:1px solid #f0f3ff; border-radius:12px; padding:14px; box-shadow:0 6px 18px rgba(47,60,80,0.04); cursor:pointer; }
 .discussion-thread-card .thread-meta-row { display:flex; justify-content:space-between; align-items:center; gap:8px; }
 .discussion-thread-card strong { font-size:16px; }
-.thread-author-link { background:none; border:none; color:#667eea; cursor:pointer; font-weight:700; }
+.thread-author-link,
+.profile-link { background:none; border:none; color:#667eea; cursor:pointer; font-weight:700; padding:0; font: inherit; text-decoration: underline; }
 
 .discussion-thread-detail { background:#fff; border-radius:14px; padding:18px; box-shadow:0 10px 30px rgba(47,60,80,0.06); }
 .discussion-thread-header { display:flex; justify-content:space-between; align-items:center; gap:12px; }
@@ -1433,7 +1434,29 @@ body.dark-mode .points-box {
 .discussion-profile-header p { color:#5f6a7a; }
 .profile-stats { display:flex; gap:16px; color:#666; font-weight:700; }
 .discussion-profile-posts { margin-top:12px; display:flex; flex-direction:column; gap:10px; }
-.profile-post { background:#fff; border-radius:12px; padding:12px; border:1px solid #f1f4ff; }
+.profile-post,
+.profile-post-link {
+    text-align: left;
+    background:#fff;
+    border-radius:12px;
+    padding:12px;
+    border:1px solid #f1f4ff;
+}
+.profile-post-link {
+    display: block;
+    width: 100%;
+    font: inherit;
+    color: #1f2937;
+    cursor: pointer;
+    text-align: left;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.profile-post-link:hover {
+    background: #f8fbff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(102,126,234,0.14);
+}
 
 /* Make inline author clickable */
 .post-author { cursor: pointer; color: #2a2a72; font-weight:700; }
