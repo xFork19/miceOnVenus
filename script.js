@@ -516,7 +516,7 @@ function renderCommentsInline(id) {
     });
 }
 
-// Like button functionality — enforce single-like per client (localStorage)
+// Like button functionality — allow toggling like/unlike and update style
 document.querySelectorAll('.like-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -525,16 +525,20 @@ document.querySelectorAll('.like-btn').forEach(btn => {
         if (!id) return;
 
         const liked = getLikedPosts();
-        if (liked.includes(id)) {
-            // already liked — do nothing
-            return;
-        }
-
-        // increment visible count
+        const index = liked.indexOf(id);
         const match = btn.textContent.match(/\d+/);
         const currentLikes = match ? parseInt(match[0]) : 0;
-        btn.textContent = `❤️ ${currentLikes + 1}`;
-        liked.push(id);
+
+        if (index !== -1) {
+            liked.splice(index, 1);
+            btn.classList.remove('liked');
+            btn.textContent = `❤️ ${Math.max(0, currentLikes - 1)}`;
+        } else {
+            liked.push(id);
+            btn.classList.add('liked');
+            btn.textContent = `❤️ ${currentLikes + 1}`;
+        }
+
         setLikedPosts(liked);
     });
 });
@@ -732,13 +736,78 @@ function getUserPoints() {
     return Number(localStorage.getItem('userPoints') || '120');
 }
 
+function setUserPoints(value) {
+    localStorage.setItem('userPoints', String(Math.max(0, value)));
+}
+
+function getShopRedemptions() {
+    try { return JSON.parse(localStorage.getItem('shopRedemptions') || '[]'); } catch (e) { return []; }
+}
+
+function setShopRedemptions(arr) {
+    localStorage.setItem('shopRedemptions', JSON.stringify(arr));
+}
+
 function updatePointsLabel() {
     if (!userPointsLabel) return;
     const points = getUserPoints();
     userPointsLabel.textContent = `My Points: ${points}`;
 }
 
+function initializeShopRedemptions() {
+    const redemptions = getShopRedemptions();
+    if (!shopView) return;
+    redemptions.forEach(entry => {
+        const card = shopView.querySelector(`.prize-card[data-item="${entry.item}"]`);
+        if (card) {
+            const button = card.querySelector('.redeem-btn');
+            if (button) {
+                button.textContent = 'Redeemed';
+                button.disabled = true;
+                card.classList.add('redeemed');
+            }
+        }
+    });
+}
+
+shopView?.addEventListener('click', (e) => {
+    const button = e.target.closest('.redeem-btn');
+    if (!button) return;
+    e.stopPropagation();
+
+    const card = button.closest('.prize-card');
+    if (!card) return;
+
+    const item = card.dataset.item || card.querySelector('h4')?.textContent || 'Reward';
+    const cost = Number(card.dataset.cost || card.querySelector('.prize-cost')?.textContent.replace(/[^\d]/g, '') || 0);
+    const points = getUserPoints();
+
+    if (button.disabled || card.classList.contains('redeemed')) {
+        alert(`${item} has already been redeemed.`);
+        return;
+    }
+
+    if (points < cost) {
+        alert(`You need ${cost} points to redeem ${item}, but you only have ${points}.`);
+        return;
+    }
+
+    setUserPoints(points - cost);
+    updatePointsLabel();
+    button.textContent = 'Redeemed';
+    button.disabled = true;
+    card.classList.add('redeemed');
+
+    const redemptions = getShopRedemptions();
+    redemptions.push({ item, cost, redeemedAt: new Date().toISOString() });
+    setShopRedemptions(redemptions);
+
+    alert(`Success! You redeemed ${item} for ${cost} points.`);
+});
+
+
 updatePointsLabel();
+initializeShopRedemptions();
 
 // Create folder button
 const createFolderBtn = document.getElementById('createFolderBtn');
