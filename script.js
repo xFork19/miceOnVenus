@@ -754,38 +754,17 @@ function updatePointsLabel() {
     userPointsLabel.textContent = `My Points: ${points}`;
 }
 
-function initializeShopRedemptions() {
-    const redemptions = getShopRedemptions();
-    if (!shopView) return;
-    redemptions.forEach(entry => {
-        const card = shopView.querySelector(`.prize-card[data-item="${entry.item}"]`);
-        if (card) {
-            const button = card.querySelector('.redeem-btn');
-            if (button) {
-                button.textContent = 'Redeemed';
-                button.disabled = true;
-                card.classList.add('redeemed');
-            }
-        }
-    });
-}
-
 shopView?.addEventListener('click', (e) => {
     const button = e.target.closest('.redeem-btn');
     if (!button) return;
     e.stopPropagation();
 
-    const card = button.closest('.prize-card');
+    const card = button.closest('.shop-item');
     if (!card) return;
 
     const item = card.dataset.item || card.querySelector('h4')?.textContent || 'Reward';
     const cost = Number(card.dataset.cost || card.querySelector('.prize-cost')?.textContent.replace(/[^\d]/g, '') || 0);
     const points = getUserPoints();
-
-    if (button.disabled || card.classList.contains('redeemed')) {
-        alert(`${item} has already been redeemed.`);
-        return;
-    }
 
     if (points < cost) {
         alert(`You need ${cost} points to redeem ${item}, but you only have ${points}.`);
@@ -794,9 +773,6 @@ shopView?.addEventListener('click', (e) => {
 
     setUserPoints(points - cost);
     updatePointsLabel();
-    button.textContent = 'Redeemed';
-    button.disabled = true;
-    card.classList.add('redeemed');
 
     const redemptions = getShopRedemptions();
     redemptions.push({ item, cost, redeemedAt: new Date().toISOString() });
@@ -805,9 +781,7 @@ shopView?.addEventListener('click', (e) => {
     alert(`Success! You redeemed ${item} for ${cost} points.`);
 });
 
-
 updatePointsLabel();
-initializeShopRedemptions();
 
 // Create folder button
 const createFolderBtn = document.getElementById('createFolderBtn');
