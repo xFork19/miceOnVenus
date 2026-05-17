@@ -92,15 +92,15 @@
 
             <div class="sidebar-section">
                 <h4>My Options</h4>
-                <div class="option-item">
+                <div class="option-item" data-action="upload">
                     <span>⬆️</span>
                     <span>Upload Diagram</span>
                 </div>
-                <div class="option-item">
+                <div class="option-item" data-action="saved">
                     <span>❤️</span>
                     <span>Saved</span>
                 </div>
-                <div class="option-item">
+                <div class="option-item" data-action="following">
                     <span>👥</span>
                     <span>Following</span>
                 </div>
@@ -112,6 +112,16 @@
                     <span>📅</span>
                     <span>My Study Sessions</span>
                 </div>
+            </div>
+
+            <div class="sidebar-section cart-section">
+                <h4>Cart</h4>
+                <div id="cartList" class="cart-list"></div>
+                <div class="cart-summary">
+                    <span>Total:</span>
+                    <strong id="cartTotal">0 points</strong>
+                </div>
+                <button id="clearCartBtn" class="cart-clear-btn" type="button">Clear Cart</button>
             </div>
 
             <div class="sidebar-section materials-section">
@@ -129,11 +139,11 @@
 
             <div class="sidebar-section">
                 <h4>Connect!!</h4>
-                <div class="option-item">
+                <div class="option-item" data-action="direct-messages">
                     <span>💬</span>
                     <span>Direct Messages</span>
                 </div>
-                <div class="option-item">
+                <div class="option-item" data-action="connect-sessions">
                     <span>📚</span>
                     <span>Study Sessions</span>
                 </div>
@@ -215,152 +225,7 @@
                 <div class="view-header">
                     <h2 id="viewTitle">All Posts</h2>
                 </div>
-                <div class="masonry-grid" id="diagramGrid">
-                <!-- Sample diagram cards -->
-                <div class="diagram-card" data-id="1" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    <div class="diagram-placeholder">
-                        <span>📊</span>
-                        <p>Graph Theory Concepts</p>
-                    </div>
-                    <div class="card-info">
-                        <h3>Graph Theory Basics</h3>
-                        <p class="card-author">by Alex Johnson</p>
-                        <div class="card-meta">
-                            <span>Mathematics</span>
-                            <span class="like-btn">❤️ 284</span>
-                            <button class="save-btn" title="Save">🔖</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="diagram-card" data-id="2" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                    <div class="diagram-placeholder">
-                        <span>🧬</span>
-                        <p>Cell Structure</p>
-                    </div>
-                    <div class="card-info">
-                        <h3>Cell Biology Overview</h3>
-                        <p class="card-author">by Sarah Chen</p>
-                        <div class="card-meta">
-                            <span>Science</span>
-                            <span class="like-btn">❤️ 156</span>
-                            <button class="save-btn" title="Save">🔖</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="diagram-card" data-id="3" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                    <div class="diagram-placeholder">
-                        <span>🌍</span>
-                        <p>World Map</p>
-                    </div>
-                    <div class="card-info">
-                        <h3>European Geography</h3>
-                        <p class="card-author">by Mike Rodriguez</p>
-                        <div class="card-meta">
-                            <span>History</span>
-                            <span class="like-btn">❤️ 92</span>
-                            <button class="save-btn" title="Save">🔖</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="diagram-card" data-id="4" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-                    <div class="diagram-placeholder">
-                        <span>📚</span>
-                        <p>Literature Analysis</p>
-                    </div>
-                    <div class="card-info">
-                        <h3>Shakespeare's Characters</h3>
-                        <p class="card-author">by Emily Watson</p>
-                        <div class="card-meta">
-                            <span>Languages</span>
-                            <span class="like-btn">❤️ 201</span>
-                            <button class="save-btn" title="Save">🔖</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="diagram-card" data-id="5" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-                    <div class="diagram-placeholder">
-                        <span>⚛️</span>
-                        <p>Atomic Structure</p>
-                    </div>
-                    <div class="card-info">
-                        <h3>Chemistry Fundamentals</h3>
-                        <p class="card-author">by David Lee</p>
-                        <div class="card-meta">
-                            <span>Science</span>
-                            <span class="like-btn">❤️ 178</span>
-                            <button class="save-btn" title="Save">🔖</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="diagram-card" data-id="6" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
-                    <div class="diagram-placeholder">
-                        <span>🎭</span>
-                        <p>Art History</p>
-                    </div>
-                    <div class="card-info">
-                        <h3>Renaissance Art Timeline</h3>
-                        <p class="card-author">by Julia Martinez</p>
-                        <div class="card-meta">
-                            <span>Arts & Design</span>
-                            <span class="like-btn">❤️ 145</span>
-                            <button class="save-btn" title="Save">🔖</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="diagram-card" data-id="7" style="background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);">
-                    <div class="diagram-placeholder">
-                        <span>🧮</span>
-                        <p>Calculus Concepts</p>
-                    </div>
-                    <div class="card-info">
-                        <h3>Derivatives & Integrals</h3>
-                        <p class="card-author">by Tom Anderson</p>
-                        <div class="card-meta">
-                            <span>Mathematics</span>
-                            <span class="like-btn">❤️ 267</span>
-                            <button class="save-btn" title="Save">🔖</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="diagram-card" data-id="8" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    <div class="diagram-placeholder">
-                        <span>🔭</span>
-                        <p>Astronomy</p>
-                    </div>
-                    <div class="card-info">
-                        <h3>Solar System Guide</h3>
-                        <p class="card-author">by Lisa Park</p>
-                        <div class="card-meta">
-                            <span>Science</span>
-                            <span class="like-btn">❤️ 189</span>
-                            <button class="save-btn" title="Save">🔖</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="diagram-card" data-id="9" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                    <div class="diagram-placeholder">
-                        <span>🎨</span>
-                        <p>Color Theory</p>
-                    </div>
-                    <div class="card-info">
-                        <h3>Design Principles</h3>
-                        <p class="card-author">by Chris Brown</p>
-                        <div class="card-meta">
-                            <span>Art & Design</span>
-                            <span class="like-btn">❤️ 134</span>
-                            <button class="save-btn" title="Save">🔖</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <div class="masonry-grid" id="diagramGrid"></div>
 
                 <div id="sessionsView" class="sessions-view" style="display:none;">
                     <div class="sessions-header">
@@ -392,6 +257,35 @@
                             </div>
                             <button class="join-session-btn" data-session-id="s3">Join</button>
                         </div>
+                    </div>
+                </div>
+
+                <div id="uploadView" class="upload-view" style="display:none;">
+                    <div class="upload-panel">
+                        <h3>Upload New Content</h3>
+                        <p>Share a new post or video and earn coins when you publish.</p>
+                        <label class="upload-label">Type
+                            <select id="uploadType" class="upload-select">
+                                <option value="post">Post</option>
+                                <option value="video">Video</option>
+                            </select>
+                        </label>
+                        <label class="upload-label">Title
+                            <input id="uploadTitle" class="upload-input" type="text" placeholder="Add a title">
+                        </label>
+                        <label class="upload-label">Category
+                            <input id="uploadCategory" class="upload-input" type="text" placeholder="e.g. Science">
+                        </label>
+                        <label class="upload-label">Visibility</label>
+                        <div class="upload-radio-row">
+                            <label><input type="radio" name="uploadVisibility" value="public" checked> Public</label>
+                            <label><input type="radio" name="uploadVisibility" value="private"> Private</label>
+                        </div>
+                        <label class="upload-label">Description
+                            <textarea id="uploadDescription" class="upload-textarea" placeholder="Write a short description..."></textarea>
+                        </label>
+                        <button id="publishUploadBtn" class="upload-publish-btn" type="button">Publish</button>
+                        <div id="uploadStatus" class="upload-status"></div>
                     </div>
                 </div>
 

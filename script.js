@@ -102,6 +102,7 @@ document.querySelectorAll('.settings-toggle input[type="checkbox"]').forEach((to
 // Category filter functionality
 const categoryItems = document.querySelectorAll('.category-item');
 const searchBar = document.querySelector('.search-bar');
+const diagramGrid = document.getElementById('diagramGrid');
 
 let currentCategory = 'all';
 let currentSearch = '';
@@ -114,30 +115,254 @@ function getMaterials() {
 
 function setMaterials(arr) { localStorage.setItem('materialsFolders', JSON.stringify(arr)); }
 
-function renderMaterialFolders() {
-    const container = document.getElementById('materialFolders');
-    if (!container) return;
-    const materials = getMaterials();
-    container.innerHTML = '';
+function getUserUploads() {
+    try { return JSON.parse(localStorage.getItem('userUploads') || '[]'); } catch(e) { return []; }
+}
 
-    Object.keys(materials).forEach(folderName => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'material-folder';
-        if (currentFolder === folderName) button.classList.add('active');
-        button.textContent = `${folderName} (${materials[folderName].length})`;
-        button.addEventListener('click', () => {
-            currentFolder = folderName;
-            viewTitle.textContent = `Materials: ${folderName}`;
-            showSavedOnly = false;
-            currentView = 'posts';
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector('.posts-btn')?.classList.add('active');
-            renderMaterialFolders();
-            filterDiagrams();
+function setUserUploads(arr) { localStorage.setItem('userUploads', JSON.stringify(arr)); }
+
+function getCartItems() {
+    try { return JSON.parse(localStorage.getItem('cartItems') || '[]'); } catch(e) { return []; }
+}
+
+function setCartItems(arr) { localStorage.setItem('cartItems', JSON.stringify(arr)); }
+
+function renderCart() {
+    const cartList = document.getElementById('cartList');
+    const cartTotal = document.getElementById('cartTotal');
+    if (!cartList || !cartTotal) return;
+    const items = getCartItems();
+    cartList.innerHTML = '';
+    let total = 0;
+
+    if (items.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'cart-item';
+        empty.textContent = 'Your cart is empty. Purchase prizes in the shop.';
+        cartList.appendChild(empty);
+    } else {
+        items.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'cart-item';
+            row.innerHTML = `<span>${item.name}</span><span>${item.cost} pts</span>`;
+            cartList.appendChild(row);
+            total += Number(item.cost || 0);
         });
-        container.appendChild(button);
+    }
+
+    cartTotal.textContent = `${total} points`;
+}
+
+function addToCart(name, cost) {
+    const cart = getCartItems();
+    cart.push({ name, cost });
+    setCartItems(cart);
+    renderCart();
+}
+
+function clearCart() {
+    setCartItems([]);
+    renderCart();
+}
+
+const IMAGE_FILE_LIST = [
+    'a1.jpg','a10.jpg','a2.jpg','a3.png','a4.jpg','a5.jpg','a6.png','a7.jpg','a8.jpg','a9.jpg',
+    'b1.png','b10.jpg','b2.jpg','b3.jpg','b4.png','b5.jpg','b6.png','b7.jpg','b8.jpg','b9.jpg',
+    'c1.png','c10.jpg','c3.png','c4.jpg','c5.jpg','c6.jpg','c7.jpg','c8.png','c9.png',
+    'd1.webp','d10.jpg','d2.jpeg','d3.webp','d4.jpg','d5.png','d6.png','d7.png','d8.png','d9.webp',
+    'm1.webp','m10.png','m2.jpg','m3.png','m5.webp','m6.jpg','m7.png','m8.jpg','m9.jpg',
+    'p5.jpg'
+];
+
+const IMAGE_CATEGORIES = {
+    a: {category:'Arts & Design', tags:['art','visual design','creative']},
+    b: {category:'Science', tags:['biology','life science','ecosystems']},
+    c: {category:'Science', tags:['chemistry','reactions','molecules']},
+    d: {category:'Science', tags:['physics','motion','energy']},
+    m: {category:'Mathematics', tags:['algebra','calculus','geometry']},
+    p: {category:'Science', tags:['technology','innovation','STEM']}
+};
+
+const POSTS = {};
+IMAGE_FILE_LIST.forEach((filename, index) => {
+    const prefix = filename[0];
+    const meta = IMAGE_CATEGORIES[prefix] || {category:'Science', tags:['study','science']};
+    const id = filename.replace(/[^a-zA-Z0-9]/g, '_');
+    const baseName = filename.replace(/\.(jpg|jpeg|png|webp)$/i, '');
+    POSTS[id] = {
+        id,
+        title: `Diagram ${baseName.toUpperCase()}`,
+        author: `${meta.category} Lab`,
+        category: meta.category,
+        tags: meta.tags,
+        image: `post_images/${filename}`,
+        likes: 50 + ((index * 7) % 200),
+        content: `A helpful ${meta.category.toLowerCase()} diagram focused on ${meta.tags.join(', ')}.`, 
+        type: 'post'
+    };
+});
+
+function renderInitialPosts() {
+    Object.values(POSTS)
+        .sort((a, b) => a.id.localeCompare(b.id))
+        .forEach(post => addUploadCardToFeed(post));
+}
+
+function loadUserUploads() {
+    const uploads = getUserUploads();
+    uploads.forEach(upload => {
+        POSTS[upload.id] = upload;
+        addUploadCardToFeed(upload);
     });
+}
+
+function addUploadCardToFeed(upload) {
+    const card = document.createElement('div');
+    card.className = 'diagram-card';
+    card.dataset.id = upload.id;
+    card.dataset.type = upload.type === 'video' ? 'video' : 'post';
+    card.dataset.category = upload.category || 'General';
+    card.dataset.tags = (upload.tags || []).join(',');
+
+    card.innerHTML = `
+        <div class="diagram-placeholder">
+            ${upload.image ? `<img src="${upload.image}" alt="${upload.title}">` : `<span>${upload.type === 'video' ? '🎥' : '📊'}</span>`}
+            <p>${upload.title}</p>
+        </div>
+        <div class="card-info">
+            <h3>${upload.title}</h3>
+            <p class="card-author">by ${upload.author}</p>
+            <div class="card-meta">
+                <span>${upload.category}</span>
+                <span class="like-btn">❤️ ${upload.likes || 0}</span>
+                <button class="save-btn" title="Save">🔖</button>
+            </div>
+            <div class="card-tags">${(upload.tags || []).map(tag => `<span class="tag-badge">${tag}</span>`).join('')}</div>
+        </div>
+    `;
+
+    diagramGrid.appendChild(card);
+    attachCardInteractivity(card);
+}
+
+function attachCardInteractivity(card) {
+    const likeBtn = card.querySelector('.like-btn');
+    const saveBtn = card.querySelector('.save-btn');
+
+    card.addEventListener('click', (e) => {
+        if (e.target.closest('.like-btn') || e.target.closest('.save-btn')) return;
+        const id = card.dataset.id;
+        if (id) openSinglePost(id);
+    });
+
+    likeBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = card.dataset.id;
+        if (!id) return;
+        const liked = getLikedPosts();
+        const match = likeBtn.textContent.match(/\d+/);
+        let count = match ? parseInt(match[0]) : 0;
+        if (liked.includes(id)) {
+            const index = liked.indexOf(id);
+            liked.splice(index, 1);
+            likeBtn.classList.remove('liked');
+            count = Math.max(0, count - 1);
+        } else {
+            liked.push(id);
+            likeBtn.classList.add('liked');
+            count += 1;
+        }
+        likeBtn.textContent = `❤️ ${count}`;
+        setLikedPosts(liked);
+    });
+
+    saveBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = card.dataset.id;
+        if (!id) return;
+        const saved = getSavedPosts();
+        const idx = saved.indexOf(id);
+        if (idx === -1) {
+            saved.push(id);
+            saveBtn.classList.add('saved');
+        } else {
+            saved.splice(idx, 1);
+            saveBtn.classList.remove('saved');
+            removeFromAllFolders(id);
+        }
+        setSavedPosts(saved);
+        renderMaterialFolders();
+    });
+}
+
+function publishUpload() {
+    const titleInput = document.getElementById('uploadTitle');
+    const categoryInput = document.getElementById('uploadCategory');
+    const descriptionInput = document.getElementById('uploadDescription');
+    const typeInput = document.getElementById('uploadType');
+    const visibility = document.querySelector('input[name="uploadVisibility"]:checked')?.value || 'public';
+    const status = document.getElementById('uploadStatus');
+
+    if (!titleInput || !categoryInput || !descriptionInput || !typeInput || !status) return;
+    const title = titleInput.value.trim();
+    const category = categoryInput.value.trim() || 'General';
+    const content = descriptionInput.value.trim();
+    const type = typeInput.value;
+
+    if (!title || !content) {
+        status.textContent = 'Please enter a title and description to publish.';
+        return;
+    }
+
+    const id = `u${Date.now()}`;
+    const upload = {
+        id,
+        title,
+        author: 'You',
+        category,
+        likes: 0,
+        content: `${content} (${visibility === 'private' ? 'Private' : 'Public'})`,
+        type,
+        visibility
+    };
+
+    const uploads = getUserUploads();
+    uploads.push(upload);
+    setUserUploads(uploads);
+    POSTS[id] = upload;
+    addUploadCardToFeed(upload);
+
+    const reward = 15;
+    setUserPoints(getUserPoints() + reward);
+    updatePointsLabel();
+
+    titleInput.value = '';
+    categoryInput.value = '';
+    descriptionInput.value = '';
+    status.textContent = `Published! You've earned ${reward} coins.`;
+    filterDiagrams();
+}
+
+function attachUploadedCardStates() {
+    document.querySelectorAll('.diagram-card').forEach(card => {
+        const likeBtn = card.querySelector('.like-btn');
+        const saveBtn = card.querySelector('.save-btn');
+        const id = card.dataset.id;
+        if (!id) return;
+        const saved = getSavedPosts();
+        const liked = getLikedPosts();
+        if (saveBtn && saved.includes(id)) {
+            saveBtn.classList.add('saved');
+        }
+        if (likeBtn && liked.includes(id)) {
+            likeBtn.classList.add('liked');
+        }
+    });
+}
+
+function setupNewUploads() {
+    loadUserUploads();
+    attachUploadedCardStates();
 }
 
 function createMaterialFolder(name) {
@@ -147,6 +372,70 @@ function createMaterialFolder(name) {
     materials[name] = [];
     setMaterials(materials);
     renderMaterialFolders();
+}
+
+function renderMaterialFolders() {
+    const container = document.getElementById('materialFolders');
+    if (!container) return;
+
+    const materials = getMaterials();
+    container.innerHTML = '';
+    const names = Object.keys(materials);
+
+    if (names.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'material-empty';
+        empty.textContent = 'No material folders yet. Save a post and add it to a folder.';
+        container.appendChild(empty);
+        return;
+    }
+
+    names.forEach(name => {
+        const ids = materials[name] || [];
+        const folder = document.createElement('div');
+        folder.className = 'material-folder';
+        folder.innerHTML = `
+            <div class="material-folder-header">
+                <strong>${name}</strong>
+                <span>${ids.length} item${ids.length === 1 ? '' : 's'}</span>
+            </div>
+        `;
+
+        const actions = document.createElement('div');
+        actions.className = 'material-folder-actions';
+
+        const viewBtn = document.createElement('button');
+        viewBtn.type = 'button';
+        viewBtn.className = 'material-folder-view';
+        viewBtn.textContent = 'View';
+        viewBtn.addEventListener('click', () => {
+            currentFolder = name;
+            showSavedOnly = false;
+            viewTitle.textContent = `${name}`;
+            filterDiagrams();
+        });
+
+        const clearBtn = document.createElement('button');
+        clearBtn.type = 'button';
+        clearBtn.className = 'material-folder-clear';
+        clearBtn.textContent = 'Clear';
+        clearBtn.addEventListener('click', () => {
+            const updated = getMaterials();
+            delete updated[name];
+            setMaterials(updated);
+            renderMaterialFolders();
+            if (currentFolder === name) {
+                currentFolder = null;
+                viewTitle.textContent = 'All Posts';
+                filterDiagrams();
+            }
+        });
+
+        actions.appendChild(viewBtn);
+        actions.appendChild(clearBtn);
+        folder.appendChild(actions);
+        container.appendChild(folder);
+    });
 }
 
 function removeFromAllFolders(id) {
@@ -208,6 +497,7 @@ function resetMainView() {
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelector('.posts-btn')?.classList.add('active');
     document.querySelector('#singlePostView')?.style.setProperty('display', 'none');
+    document.querySelector('#uploadView')?.style.setProperty('display', 'none');
     document.querySelector('#diagramGrid')?.style.setProperty('display', '');
     document.querySelector('#sessionsView')?.style.setProperty('display', 'none');
     document.querySelector('#discussionsView')?.style.setProperty('display', 'none');
@@ -337,31 +627,7 @@ function filterDiagrams() {
     });
 }
 
-// Card click handler — open inline single-post view
-const cards = document.querySelectorAll('.diagram-card');
-cards.forEach(card => {
-    card.addEventListener('click', (e) => {
-        if (e.target.closest('.like-btn') || e.target.closest('.save-btn')) return;
-        const id = card.dataset.id;
-        if (id) openSinglePost(id);
-    });
-});
-
 // Small client-side post dataset (used for single-post view)
-const POSTS = {
-    '1': {id:'1', title:'Graph Theory Basics', author:'Alex Johnson', category:'Mathematics', likes:284, content:'A concise overview of graph theory basics.'},
-    '2': {id:'2', title:'Cell Biology Overview', author:'Sarah Chen', category:'Science', likes:156, content:'Fundamentals of cell structure and function.'},
-    '3': {id:'3', title:'European Geography', author:'Mike Rodriguez', category:'History', likes:92, content:'Maps and regional facts for Europe.'},
-    '4': {id:'4', title:"Shakespeare's Characters", author:'Emily Watson', category:'Languages', likes:201, content:"Notes on major characters and themes."},
-    '5': {id:'5', title:'Chemistry Fundamentals', author:'David Lee', category:'Science', likes:178, content:'Atomic structure and basic chemistry.'},
-    '6': {id:'6', title:'Renaissance Art Timeline', author:'Julia Martinez', category:'Arts & Design', likes:145, content:'Timeline and key artists.'},
-    '7': {id:'7', title:'Derivatives & Integrals', author:'Tom Anderson', category:'Mathematics', likes:267, content:'Core calculus concepts.'},
-    '8': {id:'8', title:'Solar System Guide', author:'Lisa Park', category:'Science', likes:189, content:'Planets and their properties.'},
-    '9': {id:'9', title:'Design Principles', author:'Chris Brown', category:'Arts & Design', likes:134, content:'Basics of composition and color.'},
-    '10': {id:'10', title:"Newton's Laws in Motion", author:'Jordan Lee', category:'Video', likes:68, content:'A short video walkthrough explaining the three laws of motion.'},
-    '11': {id:'11', title:'Memory Techniques', author:'Maya King', category:'Video', likes:84, content:'A quick study video on memory and recall strategies.'},
-    '12': {id:'12', title:'Study Session Walkthrough', author:'Alex Pat', category:'Video', likes:99, content:'A guided session with tips for exam prep and focus.'}
-};
 
 const singlePostView = document.getElementById('singlePostView');
 const postImage = document.getElementById('postImage');
@@ -387,10 +653,14 @@ function openSinglePost(id) {
     document.getElementById('postCategory').textContent = post.category;
     postContent.textContent = post.content;
 
-    // Show image — copy from card if available
-    const card = document.querySelector(`.diagram-card[data-id="${id}"]`);
-    const placeholder = card ? card.querySelector('.diagram-placeholder').innerHTML : '';
-    postImage.innerHTML = placeholder || '📷';
+    // Show image — load the post image if available
+    if (post.image) {
+        postImage.innerHTML = `<img src="${post.image}" alt="${post.title}">`;
+    } else {
+        const card = document.querySelector(`.diagram-card[data-id="${id}"]`);
+        const placeholder = card ? card.querySelector('.diagram-placeholder').innerHTML : '';
+        postImage.innerHTML = placeholder || '📷';
+    }
 
     // Likes/follows/saves state
     const liked = getLikedPosts();
@@ -429,7 +699,10 @@ function openSinglePost(id) {
 
     // Show view
     diagramGrid.style.display = 'none';
+    document.getElementById('uploadView')?.style.setProperty('display', 'none');
     document.getElementById('sessionsView')?.style.setProperty('display', 'none');
+    document.getElementById('discussionsView')?.style.setProperty('display', 'none');
+    document.getElementById('shopView')?.style.setProperty('display', 'none');
     singlePostView.style.display = '';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -516,76 +789,6 @@ function renderCommentsInline(id) {
     });
 }
 
-// Like button functionality — allow toggling like/unlike and update style
-document.querySelectorAll('.like-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const card = e.target.closest('.diagram-card');
-        const id = card?.dataset.id;
-        if (!id) return;
-
-        const liked = getLikedPosts();
-        const index = liked.indexOf(id);
-        const match = btn.textContent.match(/\d+/);
-        const currentLikes = match ? parseInt(match[0]) : 0;
-
-        if (index !== -1) {
-            liked.splice(index, 1);
-            btn.classList.remove('liked');
-            btn.textContent = `❤️ ${Math.max(0, currentLikes - 1)}`;
-        } else {
-            liked.push(id);
-            btn.classList.add('liked');
-            btn.textContent = `❤️ ${currentLikes + 1}`;
-        }
-
-        setLikedPosts(liked);
-    });
-});
-
-// Save button functionality
-document.querySelectorAll('.save-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const card = e.target.closest('.diagram-card');
-        const id = card?.dataset.id;
-        if (!id) return;
-
-        const saved = getSavedPosts();
-        const idx = saved.indexOf(id);
-        if (idx === -1) {
-            saved.push(id);
-            btn.classList.add('saved');
-            btn.textContent = '🔖';
-        } else {
-            saved.splice(idx, 1);
-            btn.classList.remove('saved');
-            btn.textContent = '🔖';
-            removeFromAllFolders(id);
-        }
-        setSavedPosts(saved);
-        renderMaterialFolders();
-    });
-});
-
-    // Initialize saved/liked states on page load
-    document.querySelectorAll('.diagram-card').forEach(card => {
-        const id = card.dataset.id;
-        if (!id) return;
-        const saved = getSavedPosts();
-        const liked = getLikedPosts();
-        const saveBtn = card.querySelector('.save-btn');
-        const likeBtn = card.querySelector('.like-btn');
-        if (saveBtn && saved.includes(id)) {
-            saveBtn.classList.add('saved');
-            saveBtn.textContent = '🔖';
-        }
-        if (likeBtn && liked.includes(id)) {
-            likeBtn.classList.add('liked');
-                likeBtn.textContent = likeBtn.textContent.replace(/\d+/, match => String(Number(match) + 1));
-        }
-    });
-
 // Current view state
 let currentView = 'posts';
 
@@ -594,9 +797,9 @@ const postsBtn = document.querySelector('.posts-btn');
 const videosBtn = document.querySelector('.videos-btn');
 const sessionsBtn = document.querySelector('.sessions-btn');
 const viewTitle = document.getElementById('viewTitle');
-const diagramGrid = document.getElementById('diagramGrid');
 const discussionsView = document.getElementById('discussionsView');
 const shopView = document.getElementById('shopView');
+const uploadView = document.getElementById('uploadView');
 const userPointsLabel = document.getElementById('userPointsLabel');
 const joinedSessionsList = document.getElementById('joinedSessionsList');
 const discussionsBtn = document.querySelector('.discussions-btn');
@@ -618,6 +821,7 @@ function switchView(view) {
         viewTitle.textContent = showSavedOnly ? 'Saved Posts' : 'All Posts';
         diagramGrid.style.display = 'grid';
         sessionsViewElement.style.display = 'none';
+        uploadView?.style.setProperty('display', 'none');
         discussionViewElement.style.display = 'none';
         shopViewElement.style.display = 'none';
     } else if (view === 'videos') {
@@ -625,6 +829,7 @@ function switchView(view) {
         viewTitle.textContent = showSavedOnly ? 'Saved Videos' : 'All Videos';
         diagramGrid.style.display = 'grid';
         sessionsViewElement.style.display = 'none';
+        uploadView?.style.setProperty('display', 'none');
         discussionViewElement.style.display = 'none';
         shopViewElement.style.display = 'none';
     } else if (view === 'sessions') {
@@ -632,6 +837,7 @@ function switchView(view) {
         viewTitle.textContent = 'Study Sessions';
         diagramGrid.style.display = 'none';
         sessionsViewElement.style.display = 'block';
+        uploadView?.style.setProperty('display', 'none');
         discussionViewElement.style.display = 'none';
         shopViewElement.style.display = 'none';
     } else if (view === 'discussions') {
@@ -639,6 +845,7 @@ function switchView(view) {
         viewTitle.textContent = 'Discussion Boards';
         diagramGrid.style.display = 'none';
         sessionsViewElement.style.display = 'none';
+        uploadView?.style.setProperty('display', 'none');
         discussionViewElement.style.display = 'block';
         shopViewElement.style.display = 'none';
     } else if (view === 'shop') {
@@ -646,10 +853,19 @@ function switchView(view) {
         viewTitle.textContent = 'Shop Prizes';
         diagramGrid.style.display = 'none';
         sessionsViewElement.style.display = 'none';
+        uploadView?.style.setProperty('display', 'none');
         discussionViewElement.style.display = 'none';
         shopViewElement.style.display = 'block';
+    } else if (view === 'upload') {
+        viewTitle.textContent = 'Publish Content';
+        diagramGrid.style.display = 'none';
+        sessionsViewElement.style.display = 'none';
+        uploadView?.style.setProperty('display', 'block');
+        discussionViewElement.style.display = 'none';
+        shopViewElement.style.display = 'none';
     }
-    
+
+    singlePostView?.style.setProperty('display', 'none');
     filterDiagrams();
 }
 
@@ -674,18 +890,14 @@ sessionsBtn?.addEventListener('click', () => {
 });
 
 // Apply the default view filter on page load
+renderInitialPosts();
+setupNewUploads();
 filterDiagrams();
 renderMaterialFolders();
 renderJoinedSessions();
 updateSessionButtons();
-
-// Upload button functionality
-const uploadOptions = document.querySelectorAll('.option-item');
-if (uploadOptions.length > 0) {
-    uploadOptions[0].addEventListener('click', () => {
-        alert('Upload Diagram feature coming soon!');
-    });
-}
+renderCart();
+updatePointsLabel();
 
 const uploadDiagramBtn = document.querySelector('.option-item[data-action="upload"]');
 const savedBtn = document.querySelector('.option-item[data-action="saved"]');
@@ -693,10 +905,15 @@ const followingBtn = document.querySelector('.option-item[data-action="following
 const joinedDiscussionsBtn = document.querySelector('.option-item[data-action="joined-discussions"]');
 const directMessagesBtn = document.querySelector('.option-item[data-action="direct-messages"]');
 const connectSessionsBtn = document.querySelector('.option-item[data-action="connect-sessions"]');
+const publishUploadBtn = document.getElementById('publishUploadBtn');
+const clearCartBtn = document.getElementById('clearCartBtn');
 
 uploadDiagramBtn?.addEventListener('click', () => {
-    alert('Upload Diagram feature coming soon!');
+    switchView('upload');
 });
+
+publishUploadBtn?.addEventListener('click', publishUpload);
+clearCartBtn?.addEventListener('click', clearCart);
 
 savedBtn?.addEventListener('click', () => {
     showSavedOnly = !showSavedOnly;
@@ -777,8 +994,9 @@ shopView?.addEventListener('click', (e) => {
     const redemptions = getShopRedemptions();
     redemptions.push({ item, cost, redeemedAt: new Date().toISOString() });
     setShopRedemptions(redemptions);
+    addToCart(item, cost);
 
-    alert(`Success! You redeemed ${item} for ${cost} points.`);
+    alert(`Success! You redeemed ${item} for ${cost} points and it has been added to your cart.`);
 });
 
 updatePointsLabel();
