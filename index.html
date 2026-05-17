@@ -169,7 +169,7 @@
                         <span>Total:</span>
                         <strong id="cartTotal">0 points</strong>
                     </div>
-                    <button id="clearCartBtn" class="cart-clear-btn" type="button">Clear Rewards</button>
+                    <div id="pendingPurchasesLabel" class="cart-pending-label">Pending Purchases</div>
                 </div>
             </div>
 
@@ -205,19 +205,34 @@
                     </div>
 
                     <div class="settings-section">
-                        <h4>Display</h4>
-                        <label class="settings-toggle">
-                            <input type="checkbox" checked>
-                            <span>Compact Mode</span>
-                        </label>
-                        <label class="settings-toggle">
-                            <input type="checkbox" checked>
-                            <span>Show Animations</span>
-                        </label>
-                        <label class="settings-toggle">
-                            <input type="checkbox">
-                            <span>Reduce Motion</span>
-                        </label>
+                        <h4>Accent Color</h4>
+                        <div class="accent-options">
+                            <label class="accent-option">
+                                <input type="radio" name="accentColor" value="#667eea,#764ba2" checked>
+                                <span class="accent-preview" style="background: linear-gradient(135deg,#667eea,#764ba2);"></span>
+                                <span>Blue</span>
+                            </label>
+                            <label class="accent-option">
+                                <input type="radio" name="accentColor" value="#2eb85c,#12b886">
+                                <span class="accent-preview" style="background: linear-gradient(135deg,#2eb85c,#12b886);"></span>
+                                <span>Green</span>
+                            </label>
+                            <label class="accent-option">
+                                <input type="radio" name="accentColor" value="#7b61ff,#b072ff">
+                                <span class="accent-preview" style="background: linear-gradient(135deg,#7b61ff,#b072ff);"></span>
+                                <span>Purple</span>
+                            </label>
+                            <label class="accent-option">
+                                <input type="radio" name="accentColor" value="#ff9f43,#ff7a59">
+                                <span class="accent-preview" style="background: linear-gradient(135deg,#ff9f43,#ff7a59);"></span>
+                                <span>Orange</span>
+                            </label>
+                        </div>
+                        <div style="margin-top:12px;">
+                            <label style="display:block; font-size:13px; margin-bottom:6px;">AI Backend URL</label>
+                            <input id="aiEndpointInput" type="text" placeholder="http://127.0.0.1:8080" style="width:100%; padding:8px; border-radius:8px; border:1px solid #ddd;">
+                            <small style="color:#666; display:block; margin-top:6px;">Endpoint expects POST JSON {"clientPrompt":"..."} and returns {"answer":"..."}.</small>
+                        </div>
                     </div>
 
                     <div class="settings-section">
@@ -646,6 +661,16 @@
                                         <button id="commentSubmitInline" class="comment-submit">Send</button>
                                     </div>
                                 </form>
+                            </div>
+
+                            <div id="aiChatContainer" class="ai-chat-container">
+                                <h4>Ask the AI Assistant</h4>
+                                <div id="aiMessages" class="ai-messages"></div>
+                                <div class="ai-input-row">
+                                    <input id="aiInput" class="ai-input" placeholder="Ask a question about this post...">
+                                    <button id="aiSendBtn" class="ai-send-btn">Ask</button>
+                                </div>
+                                <div id="aiStatus" class="ai-status"></div>
                             </div>
 
                             <div class="related-posts">

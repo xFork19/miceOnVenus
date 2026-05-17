@@ -74,6 +74,35 @@ themeOptions.forEach(option => {
     });
 });
 
+// Accent color handling
+const accentOptions = document.querySelectorAll('input[name="accentColor"]');
+function applyAccent(value) {
+    const parts = (value || '').split(',');
+    const start = (parts[0] || '#667eea').trim();
+    const end = (parts[1] || '#764ba2').trim();
+    document.documentElement.style.setProperty('--accent-start', start);
+    document.documentElement.style.setProperty('--accent-end', end);
+    let foreground = '#2a2a72';
+    if (start === '#2eb85c') foreground = '#0b6623';
+    if (start === '#7b61ff') foreground = '#2b1b6f';
+    if (start === '#ff9f43') foreground = '#6a3400';
+    document.documentElement.style.setProperty('--accent-foreground', foreground);
+    localStorage.setItem('accentGradient', value);
+}
+
+const savedAccent = localStorage.getItem('accentGradient') || '#667eea,#764ba2';
+applyAccent(savedAccent);
+accentOptions.forEach(opt => opt.addEventListener('change', (e) => applyAccent(e.target.value)));
+
+// AI backend endpoint setting
+const aiEndpointInput = document.getElementById('aiEndpointInput');
+if (aiEndpointInput) {
+    aiEndpointInput.value = localStorage.getItem('aiEndpoint') || 'http://127.0.0.1:8080';
+    aiEndpointInput.addEventListener('change', () => {
+        localStorage.setItem('aiEndpoint', aiEndpointInput.value.trim());
+    });
+}
+
 // Listen for system theme changes if auto is selected
 if (window.matchMedia) {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
@@ -1232,6 +1261,52 @@ function openSinglePost(id) {
     // Comments
     renderCommentsInline(id);
 
+    // AI assistant chat
+    const aiMessages = document.getElementById('aiMessages');
+    const aiInput = document.getElementById('aiInput');
+    const aiSendBtn = document.getElementById('aiSendBtn');
+    const aiStatus = document.getElementById('aiStatus');
+    if (aiMessages) aiMessages.innerHTML = '';
+    if (aiInput) aiInput.value = '';
+
+    function appendAiMessage(role, text) {
+        if (!aiMessages) return;
+        const d = document.createElement('div');
+        d.className = 'ai-message ' + (role === 'user' ? 'ai-user' : 'ai-assistant');
+        d.textContent = text;
+        aiMessages.appendChild(d);
+        aiMessages.scrollTop = aiMessages.scrollHeight;
+    }
+
+    async function sendAiPrompt(prompt) {
+    const endpoint = 'http://127.0.01:8080/api/ask-gemini'; 
+    const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientPrompt: prompt })
+    });
+    const j = await res.json();
+    return j.answer || j.answer_text || (j.result && j.result.answer) || JSON.stringify(j);
+}
+
+    if (aiSendBtn) {
+        aiSendBtn.onclick = async (e) => {
+            e.stopPropagation();
+            const prompt = (aiInput && aiInput.value || '').trim();
+            if (!prompt) return;
+            appendAiMessage('user', prompt);
+            if (aiStatus) aiStatus.textContent = 'Thinking...';
+            try {
+                const answer = await sendAiPrompt(prompt);
+                appendAiMessage('assistant', answer);
+            } catch (err) {
+                appendAiMessage('assistant', 'Sorry, the AI service is unavailable.');
+            } finally {
+                if (aiStatus) aiStatus.textContent = '';
+            }
+        };
+    }
+
     // Related posts
     relatedGrid.innerHTML = '';
     document.querySelectorAll('.diagram-card').forEach(c => {
@@ -1519,7 +1594,6 @@ const joinedDiscussionsBtn = document.querySelector('.option-item[data-action="j
 const directMessagesBtn = document.querySelector('.option-item[data-action="direct-messages"]');
 const connectSessionsBtn = document.querySelector('.option-item[data-action="connect-sessions"]');
 const publishUploadBtn = document.getElementById('publishUploadBtn');
-const clearCartBtn = document.getElementById('clearCartBtn');
 
 uploadDiagramBtn?.addEventListener('click', () => {
     selectOptionItem(uploadDiagramBtn);

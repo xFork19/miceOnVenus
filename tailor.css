@@ -4,6 +4,12 @@
     box-sizing: border-box;
 }
 
+:root {
+    --accent-start: #667eea;
+    --accent-end: #764ba2;
+    --accent-foreground: #2a2a72;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
     background-color: #f5f5f5;
@@ -344,14 +350,14 @@ body.dark-mode .points-box {
     border: none;
     border-radius: 14px;
     padding: 10px 12px;
-    background-color: #667eea;
+    background-color: var(--accent-start);
     color: #fff;
     cursor: pointer;
     font-size: 14px;
 }
 
 .material-add-btn:hover {
-    background-color: #556dd6;
+    background-color: var(--accent-end);
 }
 
 .upload-section,
@@ -1007,7 +1013,7 @@ body.dark-mode .points-box {
     width: 100%;
     max-height: 420px;
     border-radius: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--accent-start) 0%, var(--accent-end) 100%);
     color: #fff;
     display: flex;
     align-items: center;
@@ -1214,8 +1220,8 @@ body.dark-mode .points-box {
 }
 
 .tag-badge {
-    background: rgba(102, 126, 234, 0.18);
-    color: #2a2a72;
+    background: rgba(102, 126, 234, 0.12);
+    color: var(--accent-foreground);
     font-size: 10px;
     padding: 3px 8px;
     border-radius: 999px;
@@ -1568,7 +1574,7 @@ body { font-size:15px; }
     border: none;
     border-radius: 16px;
     padding: 12px 24px;
-    background-color: #667eea;
+    background-color: var(--accent-start);
     color: #fff;
     font-weight: 700;
     cursor: pointer;
@@ -1578,8 +1584,8 @@ body { font-size:15px; }
 
 .redeem-btn:hover {
     transform: translateY(-1px);
-    background-color: #556dd6;
-    box-shadow: 0 14px 24px rgba(102, 126, 234, 0.24);
+    background-color: var(--accent-end);
+    box-shadow: 0 14px 24px rgba(0,0,0,0.12);
 }
 
 @media (max-width: 900px) {
@@ -2043,7 +2049,7 @@ body.dark-mode .card-meta span {
 
 body.dark-mode .tag-badge {
     background: rgba(102, 126, 234, 0.24);
-    color: #dfe4ff;
+    color: var(--accent-foreground);
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
 }
 
