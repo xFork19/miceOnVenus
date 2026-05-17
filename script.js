@@ -101,6 +101,7 @@ document.querySelectorAll('.settings-toggle input[type="checkbox"]').forEach((to
 
 // Category filter functionality
 const categoryItems = document.querySelectorAll('.category-item');
+const optionItems = document.querySelectorAll('.option-item');
 const searchBar = document.querySelector('.search-bar');
 const diagramGrid = document.getElementById('diagramGrid');
 
@@ -108,6 +109,16 @@ let currentCategory = 'all';
 let currentSearch = '';
 let showSavedOnly = false;
 let currentFolder = null;
+
+function clearSidebarSelection() {
+    categoryItems.forEach(i => i.classList.remove('active'));
+    optionItems.forEach(i => i.classList.remove('active'));
+}
+
+function selectOptionItem(item) {
+    clearSidebarSelection();
+    item?.classList.add('active');
+}
 
 function getMaterials() {
     try { return JSON.parse(localStorage.getItem('materialsFolders') || '{}'); } catch(e) { return {}; }
@@ -183,6 +194,15 @@ const IMAGE_CATEGORIES = {
     p: {category:'Science', tags:['technology','innovation','STEM']}
 };
 
+const AUTHOR_NAMES = [
+    'Ava Chen', 'Liam Patel', 'Mia Thompson', 'Noah Rivera', 'Zoe Brooks',
+    'Ethan Nguyen', 'Luna Carter', 'Jayden Kim', 'Iris Murphy', 'Riley Scott',
+    'Avery Brooks', 'Mason Lee', 'Kai Shah', 'Nova Lopez', 'Eli Harper',
+    'Sage Patel', 'Aria Johnson', 'Leo Grant', 'Maya Blake', 'Owen Fox',
+    'Nora Woods', 'Jade Reed', 'Ezra Clark', 'Lila Hughes', 'Max Chen',
+    'Parker Cruz', 'Luna Hart', 'Finn Brooks', 'Ruby Gray', 'Theo Adams'
+];
+
 const POSTS = {};
 IMAGE_FILE_LIST.forEach((filename, index) => {
     const prefix = filename[0];
@@ -192,7 +212,7 @@ IMAGE_FILE_LIST.forEach((filename, index) => {
     POSTS[id] = {
         id,
         title: `Diagram ${baseName.toUpperCase()}`,
-        author: `${meta.category} Lab`,
+        author: AUTHOR_NAMES[index % AUTHOR_NAMES.length],
         category: meta.category,
         tags: meta.tags,
         image: `post_images/${filename}`,
@@ -494,6 +514,7 @@ function resetMainView() {
     showSavedOnly = false;
     currentView = 'posts';
     viewTitle.textContent = 'All Posts';
+    clearSidebarSelection();
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelector('.posts-btn')?.classList.add('active');
     document.querySelector('#singlePostView')?.style.setProperty('display', 'none');
@@ -502,6 +523,7 @@ function resetMainView() {
     document.querySelector('#sessionsView')?.style.setProperty('display', 'none');
     document.querySelector('#discussionsView')?.style.setProperty('display', 'none');
     document.querySelector('#shopView')?.style.setProperty('display', 'none');
+    document.querySelector('#followingView')?.style.setProperty('display', 'none');
     renderMaterialFolders();
     filterDiagrams();
 }
@@ -575,9 +597,13 @@ function setLikedPosts(arr) { localStorage.setItem('likedPosts', JSON.stringify(
 // Category filtering
 categoryItems.forEach(item => {
     item.addEventListener('click', () => {
-        categoryItems.forEach(i => i.classList.remove('active'));
+        clearSidebarSelection();
         item.classList.add('active');
-        currentCategory = item.dataset.category;
+        const selectedCategory = item.dataset.category;
+        if (currentView !== 'posts' && currentView !== 'videos') {
+            resetMainView();
+        }
+        currentCategory = selectedCategory;
         filterDiagrams();
     });
 });
@@ -804,6 +830,50 @@ const userPointsLabel = document.getElementById('userPointsLabel');
 const joinedSessionsList = document.getElementById('joinedSessionsList');
 const discussionsBtn = document.querySelector('.discussions-btn');
 const shopBtn = document.querySelector('.shop-btn');
+const followingView = document.getElementById('followingView');
+const followedAuthorsList = document.getElementById('followedAuthorsList');
+
+function showFollowingView() {
+    currentView = 'following';
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    viewTitle.textContent = 'Following';
+    diagramGrid.style.display = 'none';
+    document.getElementById('sessionsView')?.style.setProperty('display','none');
+    document.getElementById('uploadView')?.style.setProperty('display','none');
+    document.getElementById('discussionsView')?.style.setProperty('display','none');
+    document.getElementById('shopView')?.style.setProperty('display','none');
+    singlePostView?.style.setProperty('display','none');
+    followingView?.style.setProperty('display','block');
+
+    if (!followedAuthorsList) return;
+    const followed = JSON.parse(localStorage.getItem('followedAuthors') || '[]');
+    followedAuthorsList.innerHTML = '';
+
+    if (!Array.isArray(followed) || followed.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'follow-empty';
+        empty.textContent = 'You are not following anyone yet. Open a post and click Follow to add creators here.';
+        followedAuthorsList.appendChild(empty);
+        return;
+    }
+
+    const uniqueAuthors = [...new Set(followed)];
+    uniqueAuthors.forEach(author => {
+        const authorPosts = Object.values(POSTS).filter(post => post.author === author);
+        const card = document.createElement('div');
+        card.className = 'follow-card';
+        card.innerHTML = `
+            <div class="follow-card-title">
+                <h4>${author}</h4>
+                <span>${authorPosts.length} ${authorPosts.length === 1 ? 'post' : 'posts'}</span>
+            </div>
+            <div class="follow-card-meta">
+                ${authorPosts.slice(0, 3).map(post => `<span>${post.title}</span>`).join('')}
+            </div>
+        `;
+        followedAuthorsList.appendChild(card);
+    });
+}
 
 function switchView(view) {
     currentView = view;
@@ -816,6 +886,8 @@ function switchView(view) {
     const sessionsViewElement = document.getElementById('sessionsView');
     const discussionViewElement = discussionsView;
     const shopViewElement = shopView;
+    const followingViewElement = document.getElementById('followingView');
+    followingViewElement?.style.setProperty('display', 'none');
     if (view === 'posts') {
         postsBtn?.classList.add('active');
         viewTitle.textContent = showSavedOnly ? 'Saved Posts' : 'All Posts';
@@ -870,22 +942,27 @@ function switchView(view) {
 }
 
 postsBtn?.addEventListener('click', () => {
-    switchView('posts');
+    clearSidebarSelection();
+    resetMainView();
 });
 
 videosBtn?.addEventListener('click', () => {
+    clearSidebarSelection();
     switchView('videos');
 });
 
 discussionsBtn?.addEventListener('click', () => {
+    clearSidebarSelection();
     switchView('discussions');
 });
 
 shopBtn?.addEventListener('click', () => {
+    clearSidebarSelection();
     switchView('shop');
 });
 
 sessionsBtn?.addEventListener('click', () => {
+    clearSidebarSelection();
     switchView('sessions');
 });
 
@@ -909,6 +986,7 @@ const publishUploadBtn = document.getElementById('publishUploadBtn');
 const clearCartBtn = document.getElementById('clearCartBtn');
 
 uploadDiagramBtn?.addEventListener('click', () => {
+    selectOptionItem(uploadDiagramBtn);
     switchView('upload');
 });
 
@@ -916,7 +994,15 @@ publishUploadBtn?.addEventListener('click', publishUpload);
 clearCartBtn?.addEventListener('click', clearCart);
 
 savedBtn?.addEventListener('click', () => {
+    if (showSavedOnly) {
+        clearSidebarSelection();
+    } else {
+        selectOptionItem(savedBtn);
+    }
     showSavedOnly = !showSavedOnly;
+    if (currentView !== 'posts' && currentView !== 'videos') {
+        switchView('posts');
+    }
     if (showSavedOnly) {
         viewTitle.textContent = currentView === 'videos' ? 'Saved Videos' : 'Saved Posts';
     } else {
@@ -926,18 +1012,22 @@ savedBtn?.addEventListener('click', () => {
 });
 
 followingBtn?.addEventListener('click', () => {
-    alert('View diagrams from users you follow!');
+    selectOptionItem(followingBtn);
+    showFollowingView();
 });
 
 joinedDiscussionsBtn?.addEventListener('click', () => {
+    selectOptionItem(joinedDiscussionsBtn);
     switchView('discussions');
 });
 
 directMessagesBtn?.addEventListener('click', () => {
+    selectOptionItem(directMessagesBtn);
     alert('Direct Messages coming soon!');
 });
 
 connectSessionsBtn?.addEventListener('click', () => {
+    selectOptionItem(connectSessionsBtn);
     alert('Study Sessions coming soon!');
 });
 
@@ -1022,13 +1112,120 @@ mySessionsBtn?.addEventListener('click', () => {
     switchView('sessions');
 });
 
+// Sidebar collapsible sections
+const collapseToggles = document.querySelectorAll('.collapse-toggle');
+collapseToggles.forEach(toggle => {
+    toggle.addEventListener('click', (e) => {
+        const section = e.target.closest('.sidebar-section');
+        if (!section) return;
+        const isCollapsed = section.classList.toggle('collapsed');
+        toggle.setAttribute('aria-expanded', String(!isCollapsed));
+    });
+});
+
 // Profile button
 const profileBtn = document.querySelector('.profile-btn');
-if (profileBtn) {
-    profileBtn.addEventListener('click', () => {
-        alert('View your profile!');
-    });
+const profileModal = document.getElementById('profileModal');
+const profileModalClose = document.getElementById('profileModalClose');
+const profilePictureInput = document.getElementById('profilePictureInput');
+const profilePicturePreview = document.getElementById('profilePicturePreview');
+const profileAvatarWrapper = document.getElementById('profileAvatarWrapper');
+const profileNameInput = document.getElementById('profileName');
+const profilePronounsInput = document.getElementById('profilePronouns');
+const profileGenderInput = document.getElementById('profileGender');
+const profileStatusInput = document.getElementById('profileStatus');
+const profileBioInput = document.getElementById('profileBio');
+const profileLocationInput = document.getElementById('profileLocation');
+const profileInterestsInput = document.getElementById('profileInterests');
+const saveProfileBtn = document.getElementById('saveProfileBtn');
+const clearProfileBtn = document.getElementById('clearProfileBtn');
+
+function getProfileData() {
+    try {
+        return JSON.parse(localStorage.getItem('profileData') || '{}');
+    } catch (e) {
+        return {};
+    }
 }
+
+function setProfileData(data) {
+    localStorage.setItem('profileData', JSON.stringify(data));
+}
+
+function updateProfilePreview(data) {
+    if (data.picture) {
+        profilePicturePreview.src = data.picture;
+        profilePicturePreview.style.display = 'block';
+        profileAvatarWrapper.querySelector('.profile-avatar-placeholder').style.display = 'none';
+    } else {
+        profilePicturePreview.src = '';
+        profilePicturePreview.style.display = 'none';
+        profileAvatarWrapper.querySelector('.profile-avatar-placeholder').style.display = 'block';
+    }
+}
+
+function loadProfileData() {
+    const data = getProfileData();
+    profileNameInput.value = data.name || '';
+    profilePronounsInput.value = data.pronouns || '';
+    profileGenderInput.value = data.gender || '';
+    profileStatusInput.value = data.status || '';
+    profileBioInput.value = data.bio || '';
+    profileLocationInput.value = data.location || '';
+    profileInterestsInput.value = data.interests || '';
+    updateProfilePreview(data);
+}
+
+function openProfileModal() {
+    profileModal?.classList.add('active');
+    loadProfileData();
+}
+
+function closeProfileModal() {
+    profileModal?.classList.remove('active');
+}
+
+profileBtn?.addEventListener('click', openProfileModal);
+profileModalClose?.addEventListener('click', closeProfileModal);
+profileModal?.addEventListener('click', (e) => {
+    if (e.target === profileModal) {
+        closeProfileModal();
+    }
+});
+
+profilePictureInput?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+        const data = getProfileData();
+        data.picture = reader.result;
+        setProfileData(data);
+        updateProfilePreview(data);
+    };
+    reader.readAsDataURL(file);
+});
+
+saveProfileBtn?.addEventListener('click', () => {
+    const data = {
+        picture: getProfileData().picture || '',
+        name: profileNameInput.value.trim(),
+        pronouns: profilePronounsInput.value.trim(),
+        gender: profileGenderInput.value,
+        status: profileStatusInput.value.trim(),
+        bio: profileBioInput.value.trim(),
+        location: profileLocationInput.value.trim(),
+        interests: profileInterestsInput.value.trim()
+    };
+    setProfileData(data);
+    updateProfilePreview(data);
+    closeProfileModal();
+});
+
+clearProfileBtn?.addEventListener('click', () => {
+    setProfileData({});
+    loadProfileData();
+});
 
 // Settings action buttons
 const editProfileBtn = document.querySelectorAll('.settings-action-btn')[0];
@@ -1061,6 +1258,7 @@ document.addEventListener('keydown', (e) => {
     // Close modal with Escape
     if (e.key === 'Escape') {
         settingsModal?.classList.remove('active');
+        profileModal?.classList.remove('active');
     }
 });
 
