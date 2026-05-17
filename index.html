@@ -128,16 +128,6 @@
                 </div>
             </div>
 
-            <div class="sidebar-section cart-section">
-                <h4>Cart</h4>
-                <div id="cartList" class="cart-list"></div>
-                <div class="cart-summary">
-                    <span>Total:</span>
-                    <strong id="cartTotal">0 points</strong>
-                </div>
-                <button id="clearCartBtn" class="cart-clear-btn" type="button">Clear Cart</button>
-            </div>
-
             <div class="sidebar-section materials-section">
                 <h4>Materials</h4>
                 <div class="material-controls">
@@ -168,7 +158,21 @@
                 </div>
             </div>
 
-            
+            <div class="sidebar-section collapsible-section cart-section" data-section="redeemed-rewards">
+                <div class="sidebar-section-header">
+                    <h4>Redeemed Rewards</h4>
+                    <button type="button" class="collapse-toggle" aria-expanded="true">▾</button>
+                </div>
+                <div class="sidebar-section-content">
+                    <div id="cartList" class="cart-list"></div>
+                    <div class="cart-summary">
+                        <span>Total:</span>
+                        <strong id="cartTotal">0 points</strong>
+                    </div>
+                    <button id="clearCartBtn" class="cart-clear-btn" type="button">Clear Rewards</button>
+                </div>
+            </div>
+
         </aside>
 
         <!-- Settings Modal -->
