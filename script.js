@@ -423,7 +423,6 @@ function createNewThread() {
     const title = document.getElementById('newThreadTitle')?.value.trim();
     const author = document.getElementById('newThreadAuthor')?.value.trim() || 'Anonymous';
     const message = document.getElementById('newThreadMessage')?.value.trim();
-    const accuracy = document.querySelector('input[name="threadAccuracy"]:checked')?.value || 'accurate';
     const fileInput = document.getElementById('threadMediaInput');
     if (!title || !message) {
         alert('Please add both a thread title and a message.');
@@ -437,7 +436,7 @@ function createNewThread() {
         author,
         views: 0,
         replies: [{ author, content: message }],
-        tags: [accuracy === 'accurate' ? 'AI Accurate' : 'AI Not Accurate'],
+        tags: [],
         points: 2
     };
 
@@ -690,7 +689,6 @@ function publishUpload() {
     const categoryInput = document.getElementById('uploadCategory');
     const descriptionInput = document.getElementById('uploadDescription');
     const typeInput = document.getElementById('uploadType');
-    const accuracy = document.querySelector('input[name="uploadAccuracy"]:checked')?.value || 'accurate';
     const fileInput = document.getElementById('uploadMediaInput');
     const visibility = document.querySelector('input[name="uploadVisibility"]:checked')?.value || 'public';
     const status = document.getElementById('uploadStatus');
@@ -700,7 +698,6 @@ function publishUpload() {
     const category = categoryInput.value.trim() || 'General';
     const content = descriptionInput.value.trim();
     const type = typeInput.value;
-    const aiTag = accuracy === 'accurate' ? 'AI Accurate' : 'AI Not Accurate';
 
     if (!title || !content) {
         status.textContent = 'Please enter a title and description to publish.';
@@ -717,7 +714,7 @@ function publishUpload() {
         content: `${content} (${visibility === 'private' ? 'Private' : 'Public'})`,
         type,
         visibility,
-        tags: [aiTag, category.toLowerCase(), 'study'],
+        tags: [category.toLowerCase(), 'study'],
         points: type === 'video' ? 15 : 5
     };
 

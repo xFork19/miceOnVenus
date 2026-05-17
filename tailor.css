@@ -645,15 +645,6 @@ body.dark-mode .points-box {
     height: auto;
 }
 
-.accuracy-control {
-    display: flex;
-    gap: 14px;
-    margin-top: 8px;
-}
-
-.accuracy-control label {
-    font-size: 13px;
-}
 
 .sessions-header {
     background: #fff;
@@ -672,21 +663,28 @@ body.dark-mode .points-box {
     font-size: 14px;
 }
 
+.sessions-view {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding: 20px 0;
+}
+
 .sessions-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 16px;
+    gap: 28px;
 }
 
 .session-card {
     background: #fff;
     border-radius: 20px;
-    padding: 22px;
+    padding: 26px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 18px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.07);
 }
 
 .session-card h4 {
@@ -726,18 +724,41 @@ body.dark-mode .points-box {
 .session-actions {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 14px;
     align-items: stretch;
 }
 
-.session-action-btn {
+.view-session-btn,
+.session-action-btn,
+.join-session-btn {
     border: none;
     border-radius: 16px;
-    padding: 10px 14px;
-    background-color: #667eea;
-    color: #fff;
+    padding: 12px 16px;
     cursor: pointer;
     font-weight: 600;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.view-session-btn {
+    background-color: #f4f5ff;
+    color: #334155;
+}
+
+.view-session-btn:hover,
+.session-action-btn:hover,
+.join-session-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(102,126,234,0.16);
+}
+
+.session-action-btn {
+    background-color: #667eea;
+    color: #fff;
+}
+
+.join-session-btn {
+    background-color: #667eea;
+    color: #fff;
 }
 
 .session-action-btn.secondary {
@@ -1308,10 +1329,87 @@ body.dark-mode .points-box {
 .discussion-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(47,60,80,0.06); }
 .discussion-card.active { border-color: #667eea; box-shadow: 0 8px 24px rgba(102,126,234,0.12); }
 
-.discussion-main-panel { flex:1; display:flex; flex-direction:column; gap:12px; }
+.discussion-main-panel { flex:1; display:flex; flex-direction:column; gap:18px; }
 .discussion-board-info { display:flex; justify-content:space-between; align-items:center; gap:12px; }
 .discussion-board-info h4 { margin:0; font-size:20px; }
-.new-thread-btn { background:#667eea; color:#fff; border:none; padding:10px 14px; border-radius:12px; cursor:pointer; }
+.new-thread-btn { background:#667eea; color:#fff; border:none; padding:10px 14px; border-radius:14px; cursor:pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.new-thread-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(102,126,234,0.18); }
+
+.discussion-new-thread {
+    background: #fff;
+    border: 1px solid #e8eff9;
+    border-radius: 18px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 10px 30px rgba(47,60,80,0.05);
+}
+
+.discussion-new-thread h4 {
+    margin: 0;
+    font-size: 18px;
+    color: #1f2937;
+}
+
+.discussion-new-thread label {
+    display: block;
+    font-size: 13px;
+    color: #556272;
+    margin-top: 10px;
+}
+
+.discussion-new-thread input[type="text"],
+.discussion-new-thread textarea,
+.discussion-new-thread input[type="file"] {
+    width: 100%;
+    border: 1px solid #e3e7ef;
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 14px;
+    background: #fafbff;
+    color: #24304d;
+    outline: none;
+}
+
+.discussion-new-thread textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.discussion-new-thread input[type="file"] {
+    padding: 10px 14px;
+}
+
+.discussion-form-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+
+.discussion-form-actions button {
+    border: none;
+    border-radius: 14px;
+    padding: 12px 18px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#cancelThreadBtn {
+    background: #f0f4ff;
+    color: #334155;
+}
+
+#createThreadBtn {
+    background: #667eea;
+    color: #fff;
+}
+
+.discussion-form-actions button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 30px rgba(102,126,234,0.14);
+}
 
 .discussion-thread-list { display:flex; flex-direction:column; gap:12px; margin-top:12px; }
 .discussion-thread-card { background:#fff; border:1px solid #f0f3ff; border-radius:12px; padding:14px; box-shadow:0 6px 18px rgba(47,60,80,0.04); cursor:pointer; }
