@@ -110,7 +110,6 @@ body.dark-mode .points-box {
     align-items: center;
 }
 
-.notification-btn,
 .profile-btn,
 .nav-btn {
     background: none;
@@ -143,12 +142,10 @@ body.dark-mode .points-box {
     color: #fff;
 }
 
-.notification-btn,
 .profile-btn {
     font-size: 20px;
 }
 
-.notification-btn:hover,
 .profile-btn:hover {
     background-color: #f0f0f0;
 }

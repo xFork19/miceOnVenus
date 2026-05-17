@@ -1567,14 +1567,6 @@ connectSessionsBtn?.addEventListener('click', () => {
     alert('Study Sessions coming soon!');
 });
 
-// Notification button
-const notificationBtn = document.querySelector('.notification-btn');
-if (notificationBtn) {
-    notificationBtn.addEventListener('click', () => {
-        alert('No new notifications');
-    });
-}
-
 function getUserPoints() {
     return Number(localStorage.getItem('userPoints') || '120');
 }
