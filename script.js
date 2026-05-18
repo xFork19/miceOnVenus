@@ -1524,13 +1524,14 @@ function showFollowingView() {
         card.className = 'follow-card';
         card.innerHTML = `
             <div class="follow-card-title">
-                <h4>${author}</h4>
+                <button class="follow-card-author">${author}</button>
                 <span>${authorPosts.length} ${authorPosts.length === 1 ? 'post' : 'posts'}</span>
             </div>
             <div class="follow-card-meta">
                 ${authorPosts.slice(0, 3).map(post => `<span>${post.title}</span>`).join('')}
             </div>
         `;
+        card.querySelector('.follow-card-author')?.addEventListener('click', () => showProfile(author));
         followedAuthorsList.appendChild(card);
     });
 }
@@ -1646,6 +1647,7 @@ const joinedDiscussionsBtn = document.querySelector('.option-item[data-action="j
 const directMessagesBtn = document.querySelector('.option-item[data-action="direct-messages"]');
 const connectSessionsBtn = document.querySelector('.option-item[data-action="connect-sessions"]');
 const publishUploadBtn = document.getElementById('publishUploadBtn');
+const clearCartBtn = document.getElementById('clearCartBtn');
 
 uploadDiagramBtn?.addEventListener('click', () => {
     selectOptionItem(uploadDiagramBtn);
@@ -1689,7 +1691,7 @@ directMessagesBtn?.addEventListener('click', () => {
 
 connectSessionsBtn?.addEventListener('click', () => {
     selectOptionItem(connectSessionsBtn);
-    alert('Study Sessions coming soon!');
+    switchView('sessions');
 });
 
 function getUserPoints() {
