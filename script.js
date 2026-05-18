@@ -1269,11 +1269,43 @@ function openSinglePost(id) {
     if (aiMessages) aiMessages.innerHTML = '';
     if (aiInput) aiInput.value = '';
 
+    function escapeHtml(value) {
+        return value
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function parseAiMarkdown(text) {
+        const escaped = escapeHtml(text);
+        const formatted = escaped
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+        return formatted
+            .split('\n')
+            .map(line => {
+                const headingMatch = line.match(/^(#{1,6})\s+(.*)$/);
+                if (headingMatch) {
+                    const level = Math.min(6, headingMatch[1].length);
+                    return `<h${level}>${headingMatch[2]}</h${level}>`;
+                }
+                return `<p>${line}</p>`;
+            })
+            .join('');
+    }
+
     function appendAiMessage(role, text) {
         if (!aiMessages) return;
         const d = document.createElement('div');
         d.className = 'ai-message ' + (role === 'user' ? 'ai-user' : 'ai-assistant');
-        d.textContent = text;
+        if (role === 'assistant') {
+            d.innerHTML = parseAiMarkdown(text);
+        } else {
+            d.textContent = text;
+        }
         aiMessages.appendChild(d);
         aiMessages.scrollTop = aiMessages.scrollHeight;
     }
@@ -1307,18 +1339,35 @@ function openSinglePost(id) {
         };
     }
 
-    // Related posts
-    relatedGrid.innerHTML = '';
-    document.querySelectorAll('.diagram-card').forEach(c => {
-        if (c.dataset.id === id) return;
-        const cat = c.querySelector('.card-meta span:first-child').textContent;
-        if (cat && cat.toLowerCase() === post.category.toLowerCase()) {
-            const clone = c.cloneNode(true);
-            clone.classList.add('related-card');
-            clone.addEventListener('click', () => openSinglePost(clone.dataset.id));
-            relatedGrid.appendChild(clone);
-        }
-    });
+    // Related posts (small cards under AI assistant)
+    if (relatedGrid) relatedGrid.innerHTML = '';
+    const container = relatedGrid;
+    if (!container) {
+        console.warn('Missing #relatedGrid element');
+    } else {
+        document.querySelectorAll('.diagram-card').forEach(c => {
+            if (c.dataset.id === id) return;
+            const catEl = c.querySelector('.card-meta span:first-child');
+            const cat = catEl ? catEl.textContent : '';
+            if (cat && cat.toLowerCase() === post.category.toLowerCase()) {
+                const clone = c.cloneNode(true);
+                clone.classList.add('related-card', 'related-card--small');
+
+                // Ensure the related card click works (even with cloned buttons)
+                clone.querySelectorAll('button, a').forEach(btn => {
+                    btn.addEventListener('click', ev => ev.stopPropagation());
+                });
+
+                clone.addEventListener('click', (ev) => {
+                    ev.stopPropagation();
+                    const nextId = clone.dataset.id;
+                    if (nextId) openSinglePost(nextId);
+                });
+                container.appendChild(clone);
+            }
+        });
+    }
+
 
     // Show view
     diagramGrid.style.display = 'none';

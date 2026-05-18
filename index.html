@@ -637,6 +637,30 @@
                             <div id="postImage" class="post-image">📷</div>
                             <div id="postTitleInline" class="post-title-inline">Title</div>
                             <div id="postContent" class="post-content">Post content goes here. This is the full details view of the selected post, with the visual on the left and the other information on the right.</div>
+
+                            <div id="aiChatContainer" class="ai-chat-container">
+                                <div class="ai-chat-header">
+                                    <div>
+                                        <span class="ai-badge">AI</span>
+                                        <h4>Ask the AI Assistant</h4>
+                                        <p>Get help with this post or diagram in a friendly chat view.</p>
+                                    </div>
+                                </div>
+                                <div id="aiMessages" class="ai-messages"></div>
+                                <div class="ai-input-row">
+                                    <input id="aiInput" class="ai-input" placeholder="Ask a question about this post...">
+                                    <button id="aiSendBtn" class="ai-send-btn">Ask</button>
+                                </div>
+                                <div id="aiStatus" class="ai-status"></div>
+
+                                <!-- Related posts (small cards) -->
+                                <div class="related-posts" aria-label="Related posts">
+                                    <div class="related-posts-header">
+                                        <h4>Related posts</h4>
+                                    </div>
+                                    <div id="relatedGrid" class="related-grid"></div>
+                                </div>
+                            </div>
                         </div>
                         <aside class="post-right">
                             <div class="post-header">
@@ -661,21 +685,6 @@
                                         <button id="commentSubmitInline" class="comment-submit">Send</button>
                                     </div>
                                 </form>
-                            </div>
-
-                            <div id="aiChatContainer" class="ai-chat-container">
-                                <h4>Ask the AI Assistant</h4>
-                                <div id="aiMessages" class="ai-messages"></div>
-                                <div class="ai-input-row">
-                                    <input id="aiInput" class="ai-input" placeholder="Ask a question about this post...">
-                                    <button id="aiSendBtn" class="ai-send-btn">Ask</button>
-                                </div>
-                                <div id="aiStatus" class="ai-status"></div>
-                            </div>
-
-                            <div class="related-posts">
-                                <h4>Related Posts</h4>
-                                <div id="relatedGrid" class="related-grid"></div>
                             </div>
                         </aside>
                     </div>
