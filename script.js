@@ -531,7 +531,8 @@ function showProfile(author) {
     document.getElementById('discussionThreadDetail').style.display = 'none';
     if (singlePostView) singlePostView.style.display = 'none';
     if (diagramGrid) diagramGrid.style.display = 'none';
-    document.getElementById('profileName').textContent = profile.name;
+    const discussionProfileNameEl = document.getElementById('discussionProfileName');
+    if (discussionProfileNameEl) discussionProfileNameEl.textContent = profile.name;
     document.getElementById('profileBio').textContent = profile.bio;
     document.getElementById('profilePostsCount').textContent = `Posts: ${profile.posts}`;
     document.getElementById('profileFollowersCount').textContent = `Followers: ${profile.followers || 0}`;
@@ -728,7 +729,9 @@ function attachCardInteractivity(card) {
     const profileLink = card.querySelector('.profile-link');
     profileLink?.addEventListener('click', (e) => {
         e.stopPropagation();
-        showProfile(upload.author);
+        const authorText = card.querySelector('.card-author')?.textContent || '';
+        const author = authorText.replace('by ', '').trim();
+        if (author) showProfile(author);
     });
 }
 
@@ -1650,7 +1653,6 @@ uploadDiagramBtn?.addEventListener('click', () => {
 });
 
 publishUploadBtn?.addEventListener('click', publishUpload);
-clearCartBtn?.addEventListener('click', clearCart);
 
 savedBtn?.addEventListener('click', () => {
     if (showSavedOnly) {
