@@ -402,30 +402,34 @@
                     <div class="upload-panel">
                         <h3>Upload New Content</h3>
                         <p>Share a new post or video and earn coins when you publish.</p>
-                        <label class="upload-label">Type
-                            <select id="uploadType" class="upload-select">
-                                <option value="post">Post</option>
-                                <option value="video">Video</option>
-                            </select>
-                        </label>
-                        <label class="upload-label">Title
-                            <input id="uploadTitle" class="upload-input" type="text" placeholder="Add a title">
-                        </label>
-                        <label class="upload-label">Category
-                            <input id="uploadCategory" class="upload-input" type="text" placeholder="e.g. Science">
-                        </label>
-                        <label class="upload-label">Description
+                        <div class="upload-grid">
+                            <label class="upload-label">Type
+                                <select id="uploadType" class="upload-select">
+                                    <option value="post">Post</option>
+                                    <option value="video">Video</option>
+                                </select>
+                            </label>
+                            <label class="upload-label">Title
+                                <input id="uploadTitle" class="upload-input" type="text" placeholder="Add a title">
+                            </label>
+                            <label class="upload-label">Category
+                                <input id="uploadCategory" class="upload-input" type="text" placeholder="e.g. Science">
+                            </label>
+                        </div>
+                        <label class="upload-label upload-full-width">Description
                             <textarea id="uploadDescription" class="upload-input upload-textarea" placeholder="Write a description"></textarea>
                         </label>
-                        <label class="upload-label">Visibility</label>
-                        <div class="upload-radio-row">
-                            <label><input type="radio" name="uploadVisibility" value="public" checked> Public</label>
-                            <label><input type="radio" name="uploadVisibility" value="private"> Private</label>
+                        <div class="upload-meta-row">
+                            <label class="upload-label upload-meta-label">Visibility</label>
+                            <div class="upload-radio-row">
+                                <label><input type="radio" name="uploadVisibility" value="public" checked> Public</label>
+                                <label><input type="radio" name="uploadVisibility" value="private"> Private</label>
+                            </div>
                         </div>
-                        <label class="upload-label">Attach image or video
+                        <label class="upload-label upload-file-label">Attach image or video
                             <input id="uploadMediaInput" class="upload-input" type="file" accept="image/*,video/*" />
                         </label>
-                        <div id="uploadPreview" class="upload-preview"></div>
+                        <div id="uploadPreview" class="upload-preview">Selected media preview will appear here.</div>
                         <button id="publishUploadBtn" class="upload-publish-btn" type="button">Publish</button>
                         <div id="uploadStatus" class="upload-status"></div>
                     </div>

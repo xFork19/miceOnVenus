@@ -558,34 +558,51 @@ body.dark-mode .points-box {
 
 .upload-view {
     display: flex;
-    padding: 20px 0;
+    justify-content: center;
+    padding: 28px 0 40px;
 }
 
 .upload-panel {
-    background: #fff;
-    border-radius: 24px;
-    padding: 28px;
+    background: #ffffff;
+    border: 1px solid rgba(102,118,234,0.12);
+    border-radius: 28px;
+    padding: 32px;
     width: 100%;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    max-width: 780px;
+    box-shadow: 0 22px 70px rgba(32, 38, 75, 0.08);
 }
 
 .upload-panel h3 {
-    margin-bottom: 10px;
-    font-size: 22px;
-    color: #222;
+    margin-bottom: 8px;
+    font-size: 26px;
+    color: #1f2937;
+    letter-spacing: -0.02em;
 }
 
 .upload-panel p {
-    margin-bottom: 22px;
-    color: #666;
-    line-height: 1.6;
+    margin-bottom: 26px;
+    color: #4b5563;
+    line-height: 1.8;
+    max-width: 700px;
+}
+
+.upload-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin-bottom: 18px;
 }
 
 .upload-label {
     display: block;
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 6px;
+}
+
+.upload-full-width {
+    width: 100%;
 }
 
 .upload-input,
@@ -593,61 +610,93 @@ body.dark-mode .points-box {
 .upload-select {
     width: 100%;
     border: 1px solid #e4e8f0;
-    border-radius: 16px;
-    padding: 12px 14px;
+    border-radius: 18px;
+    padding: 14px 16px;
     margin-top: 8px;
     font-size: 14px;
-    background: #fafbff;
-    color: #333;
+    background: #f8fbff;
+    color: #111827;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.upload-input:focus,
+.upload-textarea:focus,
+.upload-select:focus {
+    outline: none;
+    border-color: #667eea;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(102,118,234,0.08);
 }
 
 .upload-textarea {
-    min-height: 120px;
+    min-height: 150px;
     resize: vertical;
+}
+
+.upload-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.upload-meta-label {
+    margin-bottom: 8px;
 }
 
 .upload-radio-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 16px;
+    gap: 14px;
+    margin-top: 6px;
 }
 
 .upload-radio-row label {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     font-size: 14px;
-    color: #555;
-}
-
-.upload-publish-btn {
-    border: none;
-    background-color: #667eea;
-    color: #fff;
-    border-radius: 16px;
-    padding: 14px 18px;
-    font-size: 15px;
+    color: #374151;
+    padding: 10px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    background: #f8fafc;
     cursor: pointer;
-    margin-top: 12px;
 }
 
-.upload-publish-btn:hover {
-    background-color: #556dd6;
+.upload-radio-row input {
+    accent-color: #667eea;
 }
 
-.upload-status {
-    margin-top: 12px;
-    color: #444;
-    font-size: 13px;
+.upload-file-label {
+    display: block;
+    margin-bottom: 0;
+}
+
+.upload-file-label input {
+    margin-top: 10px;
+    padding: 12px 14px;
+    border-radius: 18px;
+    border: 1px solid #d1d5db;
+    background: #f8faff;
 }
 
 .upload-preview,
 .discussion-file-preview {
-    margin-top: 12px;
-    border-radius: 16px;
+    margin-top: 18px;
+    border-radius: 20px;
     overflow: hidden;
-    background: #f6f8ff;
+    background: #f8fbff;
+    border: 1px dashed #d1d5db;
+    min-height: 140px;
+    padding: 18px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .upload-preview img,
@@ -657,6 +706,29 @@ body.dark-mode .points-box {
     display: block;
     max-width: 100%;
     height: auto;
+}
+
+.upload-publish-btn {
+    border: none;
+    background-color: #667eea;
+    color: #fff;
+    border-radius: 18px;
+    padding: 15px 22px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 18px;
+    box-shadow: 0 16px 30px rgba(102,118,234,0.22);
+}
+
+.upload-publish-btn:hover {
+    background-color: #556dd6;
+}
+
+.upload-status {
+    margin-top: 14px;
+    color: #374151;
+    font-size: 13px;
 }
 
 
@@ -1434,6 +1506,21 @@ body.dark-mode .points-box {
 .follow-card-title span {
     color: #62718f;
     font-size: 13px;
+}
+
+.follow-card-author {
+    border: none;
+    background: none;
+    color: #1f2937;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+}
+
+.follow-card-author:hover {
+    text-decoration: underline;
 }
 
 .follow-card-meta {
