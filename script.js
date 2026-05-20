@@ -94,14 +94,7 @@ const savedAccent = localStorage.getItem('accentGradient') || '#667eea,#764ba2';
 applyAccent(savedAccent);
 accentOptions.forEach(opt => opt.addEventListener('change', (e) => applyAccent(e.target.value)));
 
-// AI backend endpoint setting
-const aiEndpointInput = document.getElementById('aiEndpointInput');
-if (aiEndpointInput) {
-    aiEndpointInput.value = localStorage.getItem('aiEndpoint') || 'http://127.0.0.1:8080';
-    aiEndpointInput.addEventListener('change', () => {
-        localStorage.setItem('aiEndpoint', aiEndpointInput.value.trim());
-    });
-}
+// (AI backend endpoint setting removed)
 
 // Listen for system theme changes if auto is selected
 if (window.matchMedia) {
@@ -114,8 +107,6 @@ if (window.matchMedia) {
 
 // Display settings toggles
 const displayToggles = document.querySelectorAll('.settings-action-btn');
-const notificationToggle = document.querySelector('.settings-toggle input[type="checkbox"]:nth-of-type(4)');
-const soundToggle = document.querySelector('.settings-toggle input[type="checkbox"]:nth-of-type(5)');
 
 // Save notification and sound preferences
 document.querySelectorAll('.settings-toggle input[type="checkbox"]').forEach((toggle, index) => {
