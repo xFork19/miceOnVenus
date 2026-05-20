@@ -629,6 +629,65 @@ IMAGE_FILE_LIST.forEach((filename, index) => {
     };
 });
 
+const PREMADE_VIDEOS = [
+    {
+        id: 'video_study_habits',
+        title: 'Study Habits for Finals',
+        author: 'Jordan Lee',
+        category: 'Study Skills',
+        tags: ['study', 'habits', 'focus'],
+        fileData: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+        mediaType: 'video',
+        likes: 138,
+        content: 'A quick guide to building strong study habits and staying focused during finals.',
+        type: 'video',
+        points: 15
+    },
+    {
+        id: 'video_ap_calculus_review',
+        title: 'AP Calculus Review',
+        author: 'Maya King',
+        category: 'Mathematics',
+        tags: ['calculus', 'review', 'ap'],
+        fileData: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/bee.mp4',
+        mediaType: 'video',
+        likes: 201,
+        content: 'A review of AP Calculus concepts with tips on derivatives and integrals.',
+        type: 'video',
+        points: 20
+    },
+    {
+        id: 'video_physics_simulations',
+        title: 'Physics Simulation Walkthrough',
+        author: 'Ava Chen',
+        category: 'Science',
+        tags: ['physics', 'simulation', 'motion'],
+        fileData: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+        mediaType: 'video',
+        likes: 174,
+        content: 'A friendly walkthrough of physics simulations for force and motion examples.',
+        type: 'video',
+        points: 18
+    },
+    {
+        id: 'video_world_history_spotlight',
+        title: 'World History Spotlight',
+        author: 'Nora Woods',
+        category: 'History',
+        tags: ['history', 'world', 'timeline'],
+        fileData: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/bee.mp4',
+        mediaType: 'video',
+        likes: 132,
+        content: 'A short video highlighting major events in world history and why they matter.',
+        type: 'video',
+        points: 16
+    }
+];
+
+PREMADE_VIDEOS.forEach(video => {
+    POSTS[video.id] = video;
+});
+
 function renderInitialPosts() {
     Object.values(POSTS)
         .sort((a, b) => a.id.localeCompare(b.id))

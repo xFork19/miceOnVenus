@@ -43,10 +43,10 @@
                 <h3>Settings</h3>
             </div>
             
-            <div class="sidebar-section collapsible-section" data-section="categories">
+            <div class="sidebar-section collapsible-section collapsed" data-section="categories">
                 <div class="sidebar-section-header">
                     <h4>Categories</h4>
-                    <button type="button" class="collapse-toggle" aria-expanded="true">▾</button>
+                    <button type="button" class="collapse-toggle" aria-expanded="false">▾</button>
                 </div>
                 <div class="sidebar-section-content">
                     <div class="category-list">
@@ -78,31 +78,10 @@
                 </div>
             </div>
 
-            <div class="sidebar-section collapsible-section" data-section="filters">
-                <div class="sidebar-section-header">
-                    <h4>Filters</h4>
-                    <button type="button" class="collapse-toggle" aria-expanded="true">▾</button>
-                </div>
-                <div class="sidebar-section-content">
-                    <label class="filter-checkbox">
-                        <input type="checkbox" checked>
-                        <span>Recent</span>
-                    </label>
-                    <label class="filter-checkbox">
-                        <input type="checkbox">
-                        <span>Most Popular</span>
-                    </label>
-                    <label class="filter-checkbox">
-                        <input type="checkbox">
-                        <span>Trending</span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="sidebar-section collapsible-section" data-section="my-options">
+            <div class="sidebar-section collapsible-section collapsed" data-section="my-options">
                 <div class="sidebar-section-header">
                     <h4>My Options</h4>
-                    <button type="button" class="collapse-toggle" aria-expanded="true">▾</button>
+                    <button type="button" class="collapse-toggle" aria-expanded="false">▾</button>
                 </div>
                 <div class="sidebar-section-content">
                     <div class="option-item" data-action="upload">
@@ -128,23 +107,20 @@
                 </div>
             </div>
 
-            <div class="sidebar-section materials-section">
-                <h4>Materials</h4>
-                <div class="material-controls">
-                    <button id="createFolderBtn" class="material-add-btn" type="button">+ New Folder</button>
+            <div class="sidebar-section collapsible-section collapsed" data-section="joined-sessions">
+                <div class="sidebar-section-header">
+                    <h4>Joined Sessions</h4>
+                    <button type="button" class="collapse-toggle" aria-expanded="false">▾</button>
                 </div>
-                <div id="materialFolders" class="materials-list"></div>
+                <div class="sidebar-section-content">
+                    <div id="joinedSessionsList" class="joined-sessions-list"></div>
+                </div>
             </div>
 
-            <div class="sidebar-section">
-                <h4>Joined Sessions</h4>
-                <div id="joinedSessionsList" class="joined-sessions-list"></div>
-            </div>
-
-            <div class="sidebar-section collapsible-section" data-section="connect">
+            <div class="sidebar-section collapsible-section collapsed" data-section="connect">
                 <div class="sidebar-section-header">
                     <h4>Connect!!</h4>
-                    <button type="button" class="collapse-toggle" aria-expanded="true">▾</button>
+                    <button type="button" class="collapse-toggle" aria-expanded="false">▾</button>
                 </div>
                 <div class="sidebar-section-content">
                     <div class="option-item" data-action="direct-messages">
@@ -158,10 +134,18 @@
                 </div>
             </div>
 
-            <div class="sidebar-section collapsible-section cart-section" data-section="redeemed-rewards">
+            <div class="sidebar-section materials-section">
+                <h4>Materials</h4>
+                <div class="material-controls">
+                    <button id="createFolderBtn" class="material-add-btn" type="button">+ New Folder</button>
+                </div>
+                <div id="materialFolders" class="materials-list"></div>
+            </div>
+
+            <div class="sidebar-section collapsible-section collapsed cart-section" data-section="redeemed-rewards">
                 <div class="sidebar-section-header">
                     <h4>Redeemed Rewards</h4>
-                    <button type="button" class="collapse-toggle" aria-expanded="true">▾</button>
+                    <button type="button" class="collapse-toggle" aria-expanded="false">▾</button>
                 </div>
                 <div class="sidebar-section-content">
                     <div id="cartList" class="cart-list"></div>
@@ -169,7 +153,7 @@
                         <span>Total:</span>
                         <strong id="cartTotal">0 points</strong>
                     </div>
-                    <button id="clearCartBtn" class="clear-cart-btn" type="button">Clear Cart</button>
+                    <button id="clearCartBtn" class="cart-clear-btn" type="button">Clear Cart</button>
                     <div id="pendingPurchasesLabel" class="cart-pending-label">Pending Purchases</div>
                 </div>
             </div>
